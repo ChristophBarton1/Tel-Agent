@@ -53,19 +53,8 @@ UI, the database, Docker packaging, routing rules — comes after that works.
 The build order is deliberate. The previous attempt at this stalled with plenty of
 plan and no answered call.
 
-| # | Milestone | Status |
-|---|---|---|
-| 0 | First call — script answers, speaks, listens, takes a message | In progress |
-| 1 | Provider interfaces (STT / LLM / TTS) | Not started |
-| 2 | Persistence — Postgres, calls and transcripts | Not started |
-| 3 | Routing rules — whitelist / blacklist / AI | Not started |
-| 4 | Web UI | Not started |
-| 5 | Webhooks + documented REST API | Not started |
-| 6 | Built-in tools | Not started |
-| 7 | Live intervention — whisper, then takeover | Not started |
-| 8 | Health checks + alerts | Not started |
-| 9 | Docker packaging — one-command install | Not started |
-| 10 | MCP server | Not started |
+**Milestone 0 of 11 — in progress.** The full plan, and what each milestone means, is
+in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 Watch or star the repository if you want to know when it becomes installable.
 
@@ -109,10 +98,20 @@ Until then, see [`docs/SPEC.md`](docs/SPEC.md) for the full design and
 
 ### Requirements when it ships
 
-- A SIP endpoint — an extension on an existing PBX, or a purchased number
 - API keys for an STT, an LLM, and a TTS provider (or a GPU for local models)
 - A machine on the same LAN as the PBX
 - Network access to the PBX on 5060/UDP and an open RTP port range
+- A SIP endpoint. Most lines already are one:
+
+| Your line | What you need | Extra hardware |
+|---|---|---|
+| A PBX — 3CX, Asterisk, FreePBX | An extension on it | None |
+| A landline from an ISP | These are IP-based now. Either the provider gives you SIP credentials, or your router acts as a SIP registrar and you register against it — common with Fritz!Box in Austria and Germany | None |
+| A genuinely analog line — old copper, a fax line | An ATA to bridge it, e.g. a Grandstream HT801 | ~€30 |
+
+OpenDial only ever speaks SIP. That is deliberate: supporting telephony hardware
+directly is a project of its own, and an ATA solves it for about the price of a
+cable.
 
 ---
 
