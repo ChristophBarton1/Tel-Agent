@@ -1,0 +1,138 @@
+# Contributing to OpenDial
+
+Thank you for looking at this. Please read the first section before opening a pull
+request — it will save you time.
+
+---
+
+## Read this first: the project is pre-alpha
+
+OpenDial is at **Milestone 0**: getting a single real phone call answered by an AI
+voice, with the message captured and the transcript printed. There is no installable
+release, no web UI, and no database yet.
+
+**Feature pull requests will be pointed at [`IDEAS.md`](IDEAS.md) rather than merged.**
+
+That is not a judgement on your idea. The project follows one rule:
+
+> **Nothing gets built until the first call works.**
+> Not the UI. Not the rules engine. Not the second provider. Not MCP.
+
+The previous attempt at this stalled with plenty of plan and no answered call. The
+order is the only thing being changed this time, and holding that order is what makes
+the project finishable. Good ideas go into `IDEAS.md`, where they wait rather than
+distract.
+
+**What is welcome right now:** bug reports, documentation fixes, corrections to the
+specification, and anything that helps Milestone 0 work.
+
+---
+
+## The Contributor License Agreement
+
+**Every contributor must accept the [CLA](CLA.md) before their first pull request is
+merged.** No exceptions, including for one-line fixes.
+
+You keep full ownership and copyright of your work. The CLA grants Dpro GmbH a licence
+to use and relicense it, which is what allows OpenDial to be released under AGPL-3.0
+while a hosted edition and a commercial licence exist alongside it.
+
+To accept, add this line to your pull request description:
+
+```
+I have read the CLA document and I hereby sign the CLA.
+```
+
+---
+
+## Everything in this repository is English
+
+**All code, comments, docstrings, identifiers, commit messages and documentation are
+written in English**, regardless of the language you speak. This project aims at an
+international contributor base, and a codebase in any other language closes that door.
+
+User-facing *interface strings* are the exception: those live in `locales/` and are
+translated into `en`, `de` and `ar`. Translations are very welcome.
+
+---
+
+## Development setup
+
+```bash
+git clone https://github.com/Dpro-at/OpenDial.git
+cd OpenDial
+cp .env.example .env    # fill in your own keys
+```
+
+**Requirements**
+
+- Python 3.11 or newer
+- ffmpeg
+- A SIP endpoint to test against — an extension on an existing PBX is easiest
+- Your own API keys for speech-to-text, a language model, and text-to-speech
+
+Run on the **same LAN as the PBX** while developing. This avoids NAT and STUN
+entirely, which is the single biggest source of "the call connects but there is no
+audio".
+
+Docker is not required and is not assumed anywhere in the code. All configuration
+comes from environment variables.
+
+---
+
+## Code conventions
+
+**Python**
+
+- Type hints on every public function
+- `async`/`await` throughout the audio path — **a synchronous call on the call path is
+  a bug even when it is fast today**
+- Format with `ruff format`, lint with `ruff check`
+
+**Secrets**
+
+- Never log an API key, never commit one, never return one in full to a client
+- New configuration goes in `.env.example` with a safe placeholder and a comment
+
+**Call data**
+
+Recordings and transcripts are personal data under GDPR. They stay on the machine that
+produced them and are gitignored. Never add a real recording or transcript to a test
+fixture.
+
+**Commits**
+
+English, imperative mood. Explain *why* in the body when the change is not obvious.
+
+---
+
+## What makes a good pull request here
+
+- **One thing.** A PR that fixes a bug and reformats a file is two PRs.
+- **Explains the why.** The what is visible in the diff.
+- **Respects the latency budget.** Anything touching the call path is measured against
+  §B4: under 800 ms from the end of caller speech to the first audio out. If your
+  change adds latency there, say so and show the numbers.
+- **Tested in German** if it touches speech. Quality drops noticeably outside English,
+  and Austrian pronunciation of names and addresses is where most speech recognition
+  fails. Testing only in English proves very little for this project.
+
+---
+
+## Reporting a security issue
+
+**Do not open a public issue.** See [`SECURITY.md`](SECURITY.md).
+
+---
+
+## Where things are documented
+
+| File | Contents |
+|---|---|
+| [`docs/SPEC.md`](docs/SPEC.md) | The complete specification — the single source of truth |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | How `agent/`, `api/` and `web/` are separated, and which may talk to which |
+| [`CLAUDE.md`](CLAUDE.md) | The development rules, including the build order |
+| [`IDEAS.md`](IDEAS.md) | Everything deferred, and why |
+
+When the specification and any other document disagree, the specification wins — and
+the other document should be corrected.

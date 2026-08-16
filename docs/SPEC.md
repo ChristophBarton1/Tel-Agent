@@ -591,6 +591,75 @@ dead one, because the user only finds out after losing ten calls.
 - **Recording announcement on by default.** Austria requires both parties to be aware,
   and the requirement rises once a human joins.
 
+## B9.1 Outbound abuse prevention
+
+**This applies to every installation, not just the hosted edition.** Anyone running
+OpenDial pays for the calls it makes.
+
+**Toll fraud / IRSF** is the attack: someone reaches an outbound path and makes the
+system call premium-rate numbers they control. The operator pays for every minute, and
+those minutes are expensive by design. There is no single fix — the defences below are
+layered, and the outer ones must hold even when the inner ones have a bug.
+
+OpenDial exposes **three** paths that can start a real call, and all three need the
+same treatment:
+
+| Path | Control |
+|---|---|
+| `POST /api/calls/outbound` | Authenticated dashboard session |
+| `POST /hooks/call` | Its own token — **not** the outbound-webhook signing secret — rotatable |
+| MCP endpoint | Its own token, separate from the dashboard session |
+
+Each path gets a separate credential. A leak of one must not open the others.
+
+### Allow what is known; do not block what is not
+
+A blocklist always loses — an attacker has fresh numbers every day. Default policy:
+
+```
+An outbound call is permitted only if the destination is:
+  - an existing contact, or
+  - a number that has previously called this installation, or
+  - explicitly approved by the operator
+and its country is on the allowed-countries list.
+```
+
+This costs almost nothing in practice, because OpenDial's real outbound use is calling
+someone back or dialling a known contact. It removes most of the attack surface.
+
+**Always refused, regardless of other rules:** `+882` and `+883` (international
+networks) and `+881` (satellite). These have no legitimate use for a normal business
+line and cost tens of currency units per minute.
+
+### Limits, enforced in `agent/`
+
+Calls per hour per account · spend per day · maximum single-call duration · repeat
+calls to the same number per hour.
+
+**These are checked before the call is placed, in the agent — not in billing.** Billing
+finds out afterwards, and the operator pays for the interval.
+
+### Detection
+
+Alert via `send_notification` on: a sudden rise in outbound volume · calls outside
+business hours · destinations never dialled before · unusually long calls (fraud earns
+per minute, so it stalls) · the same prefix repeating quickly.
+
+Alerting alone is not enough — crossing a spend limit must **stop placing calls**, not
+just send a message. The master off switch (§A6.2) is the manual version of the same
+thing.
+
+### At the provider, and at the PBX
+
+Configure geographic dialling permissions in the telephony provider's own console and
+disable every country the installation does not need. This defence sits outside our
+code and survives our bugs, so it is the most valuable one. It is **not** enabled by
+default on a new account — it has to be set deliberately.
+
+On the PBX: use a strong extension password, do not expose SIP to the internet, and
+disable outbound calling on the agent's extension entirely while the agent only
+answers.
+
 ## B10. Deployment
 
 ```bash

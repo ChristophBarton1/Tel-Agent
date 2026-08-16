@@ -41,6 +41,11 @@ These are already described in `docs/SPEC.md` and scheduled, just not now.
   limits: an external model that can start real calls spends real money.
 - **Buying phone numbers in-app** (§A6.1) — the early audience connects an existing
   SIP extension; number purchasing comes later.
+- **`NumberProvider` interface** — number acquisition belongs behind an interface, the
+  same way STT / LLM / TTS do in §B3: Twilio, Telnyx, bring-your-own-SIP, and the
+  hosted edition each become one implementation, selected by configuration. This keeps
+  any single vendor — including the hosted edition's own — out of the code that
+  self-hosters run. The `numbers` table already carries a `provider` column.
 - **Knowledge sources and embeddings** (§A6.6, §B5) — `search_knowledge` is expected
   to become the most used tool, but not before the call works.
 - **Contacts and per-caller history** (§A6.9).

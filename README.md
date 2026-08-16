@@ -135,8 +135,11 @@ pull requests adding features will be pointed at [`IDEAS.md`](IDEAS.md) rather t
 merged. That is not a judgement on the idea — it is how this project stays finishable.
 
 **All contributors must sign the [CLA](CLA.md)** before their first pull request is
-merged. See [`CLAUDE.md`](CLAUDE.md) for code conventions. Everything in the
+merged. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening one. Everything in the
 repository — code, comments, commit messages, documentation — is written in English.
+
+Found a security problem? **Do not open a public issue** — see
+[`SECURITY.md`](SECURITY.md).
 
 ---
 
