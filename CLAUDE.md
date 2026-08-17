@@ -233,13 +233,21 @@ transport later is configuration and not a rewrite.
 - The recording announcement defaults to on — Austria requires both parties to
   be aware, and the requirement still applies once a human joins the call
 
-**Data model** — four decisions that are painful to add later, so they are made now:
+**Data model** — six decisions that are painful to add later, so they are made now:
 1. `user_id` on every table from day one, even while it is always `1`
-2. A full-text index on `transcript_lines.text` in the first migration
+2. A full-text index on `messages.text` in the first migration
 3. `numbers.owner` — customer or platform holds the number. Separates a self-hoster's
    own number from one resold by OpenDial Cloud, and governs who may release or port it
 4. `calls.billable_seconds` and `calls.provider_cost_micros` — usage metering from the
    first stored call. Integer micros, never floats
+5. `messages.stt_confidence` and `.language` — per line. Turns "German accuracy" from
+   an impression into a query. Null on text channels, which is itself the signal that
+   a line was typed rather than spoken
+6. **`conversations` is the core table, not `calls`.** A phone call is a conversation
+   on a `phone` channel, plus a `calls` row for what only a call has — caller number,
+   recording, billable seconds, provider cost. `channels` exists from the first
+   migration holding one row of kind `phone`. Same discipline as `user_id` being
+   permanently `1`: the structure is what makes Milestone 11 a write, not a redesign
 
 **Git**
 - Commit messages in English, imperative mood

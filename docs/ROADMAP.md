@@ -75,11 +75,20 @@ The second implementation of anything comes after this, never before.
 
 ## 2 — Persistence
 
-PostgreSQL. Calls and transcripts stored.
+PostgreSQL. Conversations and messages stored.
 
-Two things that are painful to add later and are therefore done here: `user_id` on
-every table even while it is always `1`, and a full-text index on transcript text in
-the first migration.
+Six things that are painful to add later and are therefore done here, in full in
+`docs/SPEC.md` §B5. The two that shape everything else:
+
+**`conversations` is the core table, not `calls`.** A phone call is a conversation on
+a channel of kind `phone`, plus a `calls` row for what only a call has — the caller's
+number, the recording, the billable seconds, the provider cost. Everything built for
+the phone then works on every channel without a branch. Renaming today costs nothing;
+renaming after Milestone 4 means migrating every stored transcript, query, API path
+and screen.
+
+**`user_id` on every table even while it is always `1`**, and a full-text index on
+`messages.text` in the first migration.
 
 ## 3 — Routing rules
 

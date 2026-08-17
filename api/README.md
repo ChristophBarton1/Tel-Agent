@@ -22,17 +22,17 @@ in `web/`.
 
 ```
 GET    /health                     deep check: SIP registration, providers, DB
-GET    /api/calls                  list + filter
-GET    /api/calls/{id}             detail + transcript
-GET    /api/calls/search?q=        full-text across transcripts
-POST   /api/calls/outbound         {to, prompt}
+GET    /api/conversations             list + filter, every channel
+GET    /api/conversations/{id}        detail + messages
+GET    /api/conversations/search?q=   full-text across every channel
+POST   /api/calls/outbound            {to, prompt} — phone only
 GET    /api/rules      POST  /api/rules
 GET    /api/agents     PATCH /api/agents/{id}
 GET    /api/contacts
 GET    /api/settings   PATCH /api/settings
 POST   /api/providers/test
-WS     /ws/calls/{id}              live transcript stream
-WS     /ws/calls/{id}/whisper      operator -> agent, mid-call
+WS     /ws/conversations/{id}         live transcript / message stream
+WS     /ws/conversations/{id}/whisper operator -> agent, mid-conversation
 ```
 
 **Webhooks out**, each signed with a shared secret:

@@ -613,25 +613,44 @@ a dropped call.
 
 ```
 users            id, email, password_hash, locale, theme, created_at
-numbers          id, user_id, provider, provider_account_ref,
+channels         id, user_id, kind(phone|whatsapp|telegram|discord|messenger|instagram),
+                 name, credentials_encrypted, webhook_secret, webhook_path,
+                 default_language, agent_id, status
+numbers          id, user_id, channel_id, provider, provider_account_ref,
                  owner(customer|platform), e164, sip_config, agent_id, status
 agents           id, user_id, name, persona_prompt, language, voice_id, settings
 contacts         id, user_id, e164, name, tags, notes
 rules            id, user_id, e164_or_pattern, action(pass|block|ai), note
-calls            id, user_id, number_id, contact_id, direction, from_e164,
-                 started_at, ended_at, handling, intent, summary, recording_path,
+
+conversations    id, user_id, channel_id, contact_id, external_id, direction,
+                 started_at, ended_at, handling, intent, summary, state_json, status
+calls            conversation_id, number_id, from_e164, recording_path,
                  billable_seconds, provider_cost_micros
-transcript_lines id, call_id, ts_ms, speaker(caller|agent|human), text, is_whisper
-tool_invocations id, call_id, tool_name, args, result, status, latency_ms
+messages         id, conversation_id, ts_ms, speaker(caller|agent|human), text,
+                 is_whisper, stt_confidence, language
+
+tool_invocations id, conversation_id, tool_name, args, result, status, latency_ms
 knowledge        id, user_id, agent_id, title, content, embedding
 webhooks         id, user_id, url, events[], secret
 ```
 
-**Four decisions that are painful to add later — make them now:**
+**`conversations` is the core table, not `calls`.** A phone call is a conversation
+whose channel is of kind `phone`; it additionally has a row in `calls` carrying the
+things only a phone call has — the caller's number, the recording, the billable
+seconds and the provider cost. A WhatsApp thread is the same conversation row with a
+different channel and no `calls` row.
+
+Everything built for the phone therefore works on every channel without a branch:
+full-text search, the archive, routing rules, `take_message`, tool invocations, the
+live view. That is the entire reason for the split.
+
+**Six decisions that are painful to add later — make them now:**
 
 1. **`user_id` on every table from day one**, even while it is always `1`. Adding
    multi-tenancy to a live database later is real pain, and the hosted edition needs it.
-2. **Full-text index on `transcript_lines.text`** from the first migration.
+2. **Full-text index on `messages.text`** from the first migration. §A6.3 calls
+   transcript search the headline feature of the calls list; an index added later means
+   the data was all there and the feature was not.
 3. **`numbers.owner`** — is the customer the holder of record for this number, or is
    the platform? This is the column that separates a self-hoster's own Twilio number
    from a number resold by OpenDial Cloud, and it governs who may release or port it.
@@ -640,6 +659,24 @@ webhooks         id, user_id, url, events[], secret
    the first stored call. Two columns today; without them, any later per-minute pricing
    starts with no history to bill or reconcile against. Store cost in integer micros,
    never floats.
+5. **`messages.stt_confidence` and `.language`** — per line, not per call.
+   Rule 4 requires 20 real calls in Austrian German before trusting an STT provider,
+   with names and addresses as the known failure point. Stored per line, confidence
+   turns that from replaying recordings into a query — *show every line under 0.7* —
+   and the failure pattern surfaces on its own. Without it, "German accuracy" stays an
+   impression rather than a measurement. `language` matters once `en` / `de` / `ar`
+   coexist and a caller switches mid-conversation. Both are null on text channels,
+   which is correct: typed text has no recognition confidence, and that null is itself
+   the signal that the line was typed rather than spoken.
+6. **`conversations` as the core table, with `calls` as a phone-only extension.**
+   The product answers on six channels (§B13), so a schema whose master table is named
+   `calls` and whose lines are keyed by `call_id` is wrong from the first migration.
+   Renaming today costs nothing — there is no code and no stored row. Renaming after
+   Milestone 4 means migrating every transcript, every query, every API path and every
+   screen. The `channels` table exists from the first migration too, holding exactly
+   one row of kind `phone` until Milestone 11 — the same discipline as `user_id` being
+   permanently `1`, and for the same reason: the structure is what makes the later work
+   a write instead of a redesign.
 
 ## B6. API surface
 
@@ -647,19 +684,25 @@ REST, documented automatically by FastAPI. The dashboard consumes this same API 
 so it exists anyway; just make it public and documented.
 
 ```
-GET    /health                     # deep check: SIP reg, providers, DB
-GET    /api/calls                  # list + filter
-GET    /api/calls/{id}             # detail + transcript
-GET    /api/calls/search?q=        # full-text across transcripts
-POST   /api/calls/outbound         # {to, prompt} — start an outbound call
+GET    /health                        # deep check: SIP reg, providers, DB
+GET    /api/conversations             # list + filter, every channel
+GET    /api/conversations/{id}        # detail + messages
+GET    /api/conversations/search?q=   # full-text across every channel
+POST   /api/calls/outbound            # {to, prompt} — phone only, starts a real call
 GET    /api/rules  POST  /api/rules
 GET    /api/agents PATCH /api/agents/{id}
 GET    /api/contacts
+GET    /api/channels   POST /api/channels     # connect a channel (§B13, Milestone 11)
 GET    /api/settings PATCH /api/settings
-POST   /api/providers/test         # test connection
-WS     /ws/calls/{id}              # live transcript stream
-WS     /ws/calls/{id}/whisper      # operator → agent, mid-call
+POST   /api/providers/test            # test connection
+WS     /ws/conversations/{id}         # live transcript / message stream
+WS     /ws/conversations/{id}/whisper # operator → agent, mid-conversation
 ```
+
+The paths follow the data model: everything that is not phone-specific is a
+*conversation*. `POST /api/calls/outbound` keeps its name because it does something
+only a phone can do — place a call — and because §B9.1 treats it as one of the three
+paths that spend real money.
 
 **Webhooks out:** `call.started` · `call.ended` · `intent.detected` ·
 `message.taken` · `tool.failed` · `system.degraded`
@@ -849,7 +892,7 @@ Do not start step N+1 before step N works.
 |---|---|---|
 | 0 | **First call** | A provider number rings, a Python script answers, speaks via TTS, takes a message, prints a transcript. **No UI, no Docker, no database.** |
 | 1 | Provider interfaces | One STT/LLM/TTS each behind clean interfaces |
-| 2 | Persistence | Postgres, calls + transcripts stored |
+| 2 | Persistence | Postgres, conversations + messages stored, schema per §B5 |
 | 3 | Routing rules | Whitelist / blacklist / AI from SIP caller ID |
 | 4 | Web UI | Call detail → calls list → home → rules → agent → settings |
 | 5 | Webhooks + REST | Documented, signed |
@@ -954,19 +997,16 @@ Decided by how much interface the platform provides, not by preference:
 The phone is the extreme case of this scale, which is why it is built first and the
 rest fitted to it. See §B11.
 
-### Data model additions
+### Data model
 
-```
-channels          id, user_id, kind(phone|whatsapp|telegram|discord|messenger|instagram),
-                  name, credentials_encrypted, webhook_secret, webhook_path,
-                  default_language, agent_id, status
-conversations     id, user_id, channel_id, external_id, contact_id, state_json,
-                  mode, last_message_at
-```
+No new tables are needed at Milestone 11. `channels`, `conversations` and `messages`
+are created in the first migration (§B5) precisely so that this milestone is a matter
+of inserting channel rows and writing transports, not of migrating a year of stored
+transcripts.
 
-`calls` and `transcript_lines` generalise rather than duplicate: a phone call is a
-conversation whose channel kind is `phone`. Deciding this at Milestone 2 costs
-nothing; discovering it at Milestone 11 is a migration across every stored transcript.
+Until Milestone 11 the `channels` table holds a single row of kind `phone`. That row
+looks like waste and is not: it is what makes the difference between adding a channel
+and rebuilding the schema underneath a live product.
 
 ---
 

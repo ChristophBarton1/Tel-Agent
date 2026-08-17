@@ -40,8 +40,8 @@ It writes to the database and publishes events. It does not grow REST endpoints 
 the UI.
 
 **4. The database is the boundary between `agent/` and `api/`.**
-They do not call each other. The agent writes calls, transcript lines and tool
-invocations; the API reads them. Redis carries live session state and the events that
+They do not call each other. The agent writes conversations, messages and tool
+invocations — plus a `calls` row when the channel is the phone; the API reads them. Redis carries live session state and the events that
 `api/` fans out to connected browsers.
 
 **5. Nothing in the audio path blocks.**
