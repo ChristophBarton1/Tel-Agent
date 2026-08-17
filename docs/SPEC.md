@@ -21,30 +21,50 @@ provider abstraction. One script in a terminal.
 **Time box: two weeks.** If it isn't working by then, the constraint is time, not
 architecture — and knowing that early is worth more than any feature.
 
-## Step 1 — 3CX extension (15 minutes)
+## Step 1 — A number that reaches the agent (30 minutes)
 
-In the 3CX management console:
+Milestone 0 needs one inbound number under your own control. Buy it from a SIP
+provider — Twilio, Telnyx, or a European equivalent — and point it at a LiveKit Cloud
+SIP trunk.
 
-1. Create a new extension — number `999`, name `AI Agent`
-2. Note down: **SIP username**, **SIP password (auth ID)**, **PBX host**, **port** (usually 5060)
-3. Disable voicemail on this extension — you want the agent to answer, not the mailbox
-4. Do **not** touch the main company line yet. Nothing routes to 999 except your own
-   test calls from an internal phone.
+1. Buy a number. A local geographic number in the EU normally needs a regulatory
+   bundle (address proof, sometimes an in-country address); budget time for it, or
+   start with a number in a country where the requirement is lighter
+2. Create an inbound SIP trunk and a dispatch rule in LiveKit Cloud
+3. Point the number's voice webhook or SIP URI at that trunk
+4. Note down: the **E.164 number**, the **trunk address**, and the **LiveKit API key
+   and secret**
 
-**Verify before writing any code:** register a softphone (Zoiper, Linphone, MicroSIP)
-with those credentials and call `999` from another internal phone. If that call
-connects, SIP is fine and every later problem is yours, not the PBX's. If it doesn't
-connect, stop and fix it here — debugging SIP through your own code is far harder.
+**Why not the PBX extension this was originally written around:** it depends on
+administrator access to a PBX. Anyone who does not have that access is blocked before
+the first line of code, and no amount of Python solves an authorization problem.
+Connecting an existing PBX extension remains fully supported and is the better story
+for businesses that already run one — it is just not the path that proves the product
+first. See §B3.1.
+
+**Verify before writing any code:** call the number from a mobile and confirm in the
+provider console that the call arrives and reaches the trunk. If it does, telephony is
+fine and every later problem is yours. If it does not, stop here — debugging SIP
+through your own code is far harder.
+
+**Record on that first call:** which number appears as the caller. Then set your own
+mobile to forward to it after 15 seconds, call that mobile from a third phone, and
+check the caller ID again. If forwarding replaces the original caller's number with
+the subscriber's, every routing rule in §A6.5 matches the same number on every call.
+Better to learn this in week one than in Milestone 3.
 
 ## Step 2 — Machine setup
 
-Run on a machine **on the same LAN as the PBX**. This avoids NAT and STUN entirely for
-now — the single biggest source of "call connects but there's no audio."
+Any machine with outbound internet access. The agent connects **out** to LiveKit; it
+accepts no inbound connections, so there is no NAT traversal, no STUN, and no RTP port
+range to open. That removes the single biggest source of "call connects but there's no
+audio" for Milestone 0 — and defers it rather than solving it, because the
+self-hosted media path at Milestone 9 brings it back.
 
 ```
 Python 3.11+
 ffmpeg installed
-Network access to the PBX on 5060/UDP and the RTP port range
+Outbound internet access (LiveKit Cloud, and the STT / LLM / TTS providers)
 ```
 
 Keys needed:
@@ -53,7 +73,7 @@ Keys needed:
 - One cloud LLM (pick the fastest you have access to)
 - ElevenLabs (TTS) — you already know this one, so no learning cost
 
-Set `codec = G.711 (PCMU/PCMA)` on the extension. Clearer to debug than Opus and
+Set `codec = G.711 (PCMU/PCMA)` on the trunk. Clearer to debug than Opus and
 fewer compatibility surprises.
 
 ## Step 3 — The script
@@ -66,8 +86,8 @@ Build it in this order — **verify each before moving on:**
 
 | # | Check | How you know it works |
 |---|---|---|
-| 1 | Register on 999 | 3CX console shows the extension as registered |
-| 2 | Answer the call | You call 999, it stops ringing, silence on the line |
+| 1 | The number reaches us | Provider console shows the inbound call reaching the trunk |
+| 2 | Answer the call | You call the number, it stops ringing, silence on the line |
 | 3 | Speak fixed text | It answers and says a hardcoded greeting |
 | 4 | Hear the caller | Your words appear as text in the terminal |
 | 5 | Full loop | You speak → LLM replies → you hear the reply |
@@ -142,7 +162,9 @@ These are settled. Do not reopen them without a concrete reason.
 | Voice framework | LiveKit Agents |
 | Packaging | Docker Compose (manual dev run also documented) |
 | Runs as | Locally installed web app on the LAN — not a desktop app, not SaaS-only |
-| First test bed | Existing 3CX PBX, extension 999 |
+| First test bed | A number from a SIP provider, pointed at the agent |
+| Number acquisition | Users bring their own number in v1. Reselling numbers belongs to OpenDial Cloud and never enters the open edition — see §B3.1 |
+| SIP in Milestone 0 | LiveKit Cloud SIP. A Milestone 0 decision only; the self-hosted media path returns at Milestone 9 |
 | Theme | Dark and light, dark designed first |
 | Languages | Multi-language from day one: en / de / ar, RTL supported |
 | Analog phone lines | Out of scope. Users bridge with an ATA; we only ever speak SIP. |
@@ -276,10 +298,18 @@ Empty states matter most here — a fresh install is entirely empty.
 
 Two clearly separated paths, side by side. Do not bury either:
 
-- **Buy a number** — pick country → available numbers with live pricing from the
-  provider API → buy
-- **I already have SIP** — host, port, username, password, register (3CX, Asterisk,
-  FreePBX). This is how most of the early audience will start.
+- **I have a number from a provider** — pick the provider, paste the credentials,
+  and the number is configured to reach the agent. Documented end to end for the three
+  providers in §B3.1. This is the path most people take.
+- **I have SIP or a PBX** — host, port, username, password, register (3CX, Asterisk,
+  FreePBX). The path for a business that already runs a PBX.
+
+Both end at the same place. Neither is presented as the advanced one.
+
+**Buying a number inside the app comes later** (§B3.1), and buying it *from us* is
+OpenDial Cloud only. Until then this step must be honest about what it needs: an
+account with a provider, and in the EU a regulatory bundle that can take days to
+clear. Say so here rather than letting the user discover it after starting.
 
 **Step 2 — Providers**
 
@@ -391,7 +421,7 @@ Appears whenever a call is active, reachable from anywhere in the app.
 
 1. **General** — interface language, theme, timezone, agent display name
 2. **Providers** — STT / LLM / TTS: provider, key, "Test connection", est. cost/min
-3. **Numbers** — connected numbers, buy new, per-number agent assignment, status
+3. **Numbers** — connected numbers, add another, per-number agent assignment, status
 4. **Routing** — forwarding target, business hours, failover
 5. **Integrations** — webhooks in/out (with "Send test"), n8n URL, notification channel
    (Telegram / email), MCP endpoint + token
@@ -480,16 +510,80 @@ ElevenLabs (TTS).
 
 **v1.1:** Ollama, Whisper local, Piper, Cartesia — many will arrive as community PRs.
 
+## B3.1 How a number reaches the agent
+
+Number acquisition sits behind an interface for the same reason STT, LLM and TTS do:
+so that no single vendor — **including the hosted edition's own** — ends up in the code
+that self-hosters run.
+
+```
+NumberProvider → list_available(country)      # what can be bought
+               → provision(number)            # acquire and configure
+               → release(number)
+               → inbound_route(number)        # where calls are delivered
+```
+
+Four implementations, in this order:
+
+| Implementation | Status | Notes |
+|---|---|---|
+| **Bring your own number** | v1 | The user's own account at Twilio, Telnyx or similar. Their keys, their number, their bill. The only path in v1. |
+| **Bring your own SIP / PBX** | v1 | An extension or trunk on 3CX, Asterisk or FreePBX. The better story for a business that already runs a PBX, and the reason the on-premises media path matters. |
+| **Buy in-app** | later | Provisioning through the user's own provider credentials, from inside the UI. Convenience over the first row, not a different relationship. |
+| **Resold by OpenDial Cloud** | OpenDial Cloud only | Numbers held by Dpro GmbH and assigned to customers. **This implementation does not ship in the open edition.** |
+
+### Why reselling stays out of the open edition
+
+Two separate reasons, and either alone is sufficient.
+
+**It is a compliance function, not a feature.** In the EU, provisioning a number
+requires a regulatory bundle per country — identity and address documents, and for
+geographic numbers usually an address inside that country. Reselling means carrying
+that obligation for every customer, plus questions about emergency service access
+where the number is somebody's main line, plus being the holder of record when a
+customer wants to port a number away. None of this belongs in software a stranger
+installs from GitHub.
+
+**The margin is not the point.** A number costs roughly €1–3 per month and inbound
+minutes well under a cent, while TTS alone runs €0.06–0.10 per minute. Number resale
+therefore earns close to nothing and should never be modelled as a revenue line. Its
+value is that it removes an account signup, a document upload and a trunk
+configuration from onboarding — a conversion improvement, priced as convenience.
+Revenue comes from the subscription and the per-minute AI.
+
+### What the open edition may know
+
+A generic `TwilioProvider` or `TelnyxProvider` into which the user pastes **their own**
+credentials. Nothing referencing a Dpro-held account, no billing logic, no subaccount
+orchestration. `numbers.provider_account_ref` exists so the hosted edition can map a
+row to a provider subaccount; in a self-hosted installation it simply stays null.
+
+### Which providers are documented
+
+"Any SIP trunk" is a support burden disguised as a feature. Pick **three** providers,
+test them on real calls, and give each one a setup page. Everything else stays possible
+through generic SIP and explicitly unsupported.
+
 ## B4. Latency budget — the hard requirement
 
 Target **under 800ms** from end of caller speech to first audio out.
 
 | Stage | Budget |
 |---|---|
-| STT final | ~150ms |
-| LLM first token | ~300ms |
+| Endpointing — deciding the caller has finished | ~200ms |
+| STT final | ~100ms |
+| LLM first token | ~250ms |
 | TTS first chunk | ~100ms |
-| Network / buffer | ~250ms |
+| Network / buffer | ~150ms |
+
+**Endpointing is inside the budget, and it is usually the largest stage.** The metric
+is measured from the end of caller speech, so the time spent deciding that the caller
+has finished is spent inside it. A plain silence threshold of 500–800ms therefore
+consumes the whole budget before the first provider is called, which makes semantic
+turn detection a requirement rather than a refinement.
+
+These figures are an allocation, not a measurement. Replace them with real numbers
+from the first calls, and treat the endpointing row as the one most likely to be wrong.
 
 **Everything streams.** The first sentence starts speaking while the rest is still being
 generated. Never wait for a complete LLM response before starting TTS. This single
@@ -503,23 +597,33 @@ a dropped call.
 
 ```
 users            id, email, password_hash, locale, theme, created_at
-numbers          id, user_id, provider, e164, sip_config, agent_id, status
+numbers          id, user_id, provider, provider_account_ref,
+                 owner(customer|platform), e164, sip_config, agent_id, status
 agents           id, user_id, name, persona_prompt, language, voice_id, settings
 contacts         id, user_id, e164, name, tags, notes
 rules            id, user_id, e164_or_pattern, action(pass|block|ai), note
 calls            id, user_id, number_id, contact_id, direction, from_e164,
-                 started_at, ended_at, handling, intent, summary, recording_path
+                 started_at, ended_at, handling, intent, summary, recording_path,
+                 billable_seconds, provider_cost_micros
 transcript_lines id, call_id, ts_ms, speaker(caller|agent|human), text, is_whisper
 tool_invocations id, call_id, tool_name, args, result, status, latency_ms
 knowledge        id, user_id, agent_id, title, content, embedding
 webhooks         id, user_id, url, events[], secret
 ```
 
-**Two decisions that are painful to add later — make them now:**
+**Four decisions that are painful to add later — make them now:**
 
 1. **`user_id` on every table from day one**, even while it is always `1`. Adding
    multi-tenancy to a live database later is real pain, and the hosted edition needs it.
 2. **Full-text index on `transcript_lines.text`** from the first migration.
+3. **`numbers.owner`** — is the customer the holder of record for this number, or is
+   the platform? This is the column that separates a self-hoster's own Twilio number
+   from a number resold by OpenDial Cloud, and it governs who may release or port it.
+   Backfilling it once both kinds exist means guessing.
+4. **`calls.billable_seconds` and `calls.provider_cost_micros`** — usage metering from
+   the first stored call. Two columns today; without them, any later per-minute pricing
+   starts with no history to bill or reconcile against. Store cost in integer micros,
+   never floats.
 
 ## B6. API surface
 
@@ -681,7 +785,7 @@ Do not start step N+1 before step N works.
 
 | # | Milestone | Done when |
 |---|---|---|
-| 0 | **First call** | A 3CX extension (e.g. 999) rings, a Python script answers, speaks via TTS, takes a message, prints a transcript. **No UI, no Docker, no database.** |
+| 0 | **First call** | A provider number rings, a Python script answers, speaks via TTS, takes a message, prints a transcript. **No UI, no Docker, no database.** |
 | 1 | Provider interfaces | One STT/LLM/TTS each behind clean interfaces |
 | 2 | Persistence | Postgres, calls + transcripts stored |
 | 3 | Routing rules | Whitelist / blacklist / AI from SIP caller ID |

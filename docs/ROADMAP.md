@@ -26,8 +26,13 @@ feature.
 
 ## 0 — First call · **in progress**
 
-A phone extension rings, a Python script answers, speaks, listens, replies, takes a
+A phone number rings, a Python script answers, speaks, listens, replies, takes a
 message, and prints a transcript.
+
+The number comes from a SIP provider and is pointed at the agent. An extension on an
+existing PBX reaches the same place and stays a first-class way to connect a line — it
+is simply not the path that proves the product first, because it depends on access to
+a PBX that the person building this may not administer.
 
 **No UI. No Docker. No database. No routing rules. No provider abstraction.**
 One script in a terminal.
@@ -36,7 +41,7 @@ Six checks, in order:
 
 | # | Check | Done when |
 |---|---|---|
-| 1 | Register | The PBX console shows the extension as registered |
+| 1 | Arrive | The provider console shows the inbound call reaching our SIP endpoint |
 | 2 | Answer | You call it, it stops ringing, the line goes quiet |
 | 3 | Speak | It answers with a hardcoded greeting |
 | 4 | Listen | Your words appear as text in the terminal |
@@ -45,15 +50,20 @@ Six checks, in order:
 
 Steps 1–2 are plumbing. **Step 5 is the product.**
 
-Before any code: a softphone registered with the same credentials must be able to call
-the extension. If that fails, the problem is in the PBX, and debugging SIP through our
-own code is far harder.
+Before any code: buy the number, point it at the SIP endpoint, call it from a mobile,
+and confirm in the provider console that the call arrives. If it does not, the problem
+is in the number configuration, and debugging SIP through our own code is far harder.
 
 **Measured from the first call:** time from end of speech to first audio out (target
-under 800 ms), where that time goes, what happens when the caller interrupts, and
-accuracy across at least 20 real calls in Austrian German including names and
-addresses. **If latency exceeds ~1.5 s, no features are added until streaming is
-fixed.**
+under 800 ms), where that time goes — **endpointing included, as it is usually the
+largest stage** — what happens when the caller interrupts, and accuracy across at
+least 20 real calls in Austrian German including names and addresses. **If latency
+exceeds ~1.5 s, no features are added until streaming is fixed.**
+
+**Also recorded on the first forwarded call:** which number arrives in the caller ID
+when a call is forwarded rather than dialled directly — the original caller's, or the
+subscriber's. This is carrier-dependent and it decides whether Milestone 3 works at
+all.
 
 ## 1 — Provider interfaces
 
@@ -74,6 +84,12 @@ the first migration.
 ## 3 — Routing rules
 
 Pass through, block, or hand to the AI, decided from the caller ID. Business hours.
+
+This milestone rests on an assumption worth testing in Milestone 0 rather than here:
+that a forwarded call still carries the original caller's number. Some carriers
+present the forwarding subscriber's number instead, which would leave every rule
+matching the same number on every call. Where the original survives in a diversion
+header, read it from there.
 
 ## 4 — Web UI
 

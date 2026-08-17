@@ -39,13 +39,13 @@ These are already described in `docs/SPEC.md` and scheduled, just not now.
 - **Docker packaging** (§B10) — Milestone 9.
 - **MCP server** (§B11) — Milestone 10. A thin layer over the REST API, with hard
   limits: an external model that can start real calls spends real money.
-- **Buying phone numbers in-app** (§A6.1) — the early audience connects an existing
-  SIP extension; number purchasing comes later.
-- **`NumberProvider` interface** — number acquisition belongs behind an interface, the
-  same way STT / LLM / TTS do in §B3: Twilio, Telnyx, bring-your-own-SIP, and the
-  hosted edition each become one implementation, selected by configuration. This keeps
-  any single vendor — including the hosted edition's own — out of the code that
-  self-hosters run. The `numbers` table already carries a `provider` column.
+- **Buying phone numbers in-app** (§A6.1) — v1 connects a number the user already
+  bought, or an existing SIP extension. Provisioning from inside the UI comes later.
+- **`NumberProvider` interface** — *promoted out of this file on 2026-08-17.* Now
+  specified in §B3.1, because Milestone 0 depends on it: the first call arrives on a
+  provider number rather than a PBX extension. The interface itself is still written
+  at Milestone 1 with the other provider interfaces; what changed is that the shape
+  and the ordering of its implementations are now decided rather than deferred.
 - **Knowledge sources and embeddings** (§A6.6, §B5) — `search_knowledge` is expected
   to become the most used tool, but not before the call works.
 - **Contacts and per-caller history** (§A6.9).
@@ -70,12 +70,43 @@ These are already described in `docs/SPEC.md` and scheduled, just not now.
 - **Trademark position on "OpenDial"** (EUIPO classes 9 and 42). An older academic
   dialogue-systems framework shares the name. Confirm before committing to a logo.
   *Not legal advice.*
-- **How SIP is handled in Milestone 0** — LiveKit self-hosted, LiveKit Cloud, or
-  direct SIP via pjsua2/baresip. See the open question in `CLAUDE.md`. Not deferred:
-  this one blocks Milestone 0 and needs an answer.
+- ~~**How SIP is handled in Milestone 0**~~ — **answered 2026-08-17: LiveKit Cloud
+  SIP.** Once the first call arrives on a provider number rather than an on-premises
+  PBX, the audio crosses the internet regardless, and the "same LAN, no NAT" objection
+  to LiveKit Cloud no longer applies. See `CLAUDE.md`. The self-hosted media path is
+  not abandoned — it returns at Milestone 9.
+- **Does a forwarded call carry the original caller's number?** Carrier-dependent, and
+  Milestone 3's routing rules are worthless if the answer is no. Measured on the first
+  forwarded call in Milestone 0 rather than discussed here.
 
 ---
 
 ## Ideas raised during the build
 
 *(Add new entries below. Date them.)*
+
+**2026-08-17 — Selling numbers to customers (OpenDial Cloud only).**
+Dpro GmbH holds numbers at Twilio and assigns them to customers, who then forward
+their existing line to the assigned number on no-answer after a set number of seconds.
+Onboarding collapses to one button instead of a provider account, a document upload
+and a trunk configuration.
+
+Deferred, and deliberately so:
+
+- It is a compliance function before it is a feature — per-country regulatory bundles,
+  in-country addresses for geographic numbers, emergency-service questions where the
+  number fronts somebody's main line, and being holder of record when a customer ports
+  away. Detail in §B3.1.
+- The margin is negligible. A number is €1–3 per month against TTS at €0.06–0.10 per
+  minute, so this is a conversion improvement, not a revenue line. Revenue comes from
+  the subscription and the per-minute AI.
+- It must never enter the open edition. What lands in the repository is a generic
+  provider into which a user pastes their own credentials.
+
+What was *not* deferred, because it is cheap now and expensive later: `numbers.owner`,
+`numbers.provider_account_ref`, and per-call usage metering — all in §B5.
+
+**2026-08-17 — Onboarding cost disclosure.**
+Whoever forwards a call usually pays for the forwarded leg in the EU. A surprise on
+the first invoice costs more trust than it saves in setup friction, so this belongs in
+the onboarding copy, not in a support article.

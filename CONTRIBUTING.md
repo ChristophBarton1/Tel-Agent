@@ -68,12 +68,15 @@ cp .env.example .env    # fill in your own keys
 
 - Python 3.11 or newer
 - ffmpeg
-- A SIP endpoint to test against — an extension on an existing PBX is easiest
+- A number to test against — bought from a SIP provider and pointed at the agent.
+  An extension on a PBX you administer works too, and is the better test of the
+  on-premises path
 - Your own API keys for speech-to-text, a language model, and text-to-speech
 
-Run on the **same LAN as the PBX** while developing. This avoids NAT and STUN
-entirely, which is the single biggest source of "the call connects but there is no
-audio".
+With a provider number the agent connects outwards and accepts no inbound
+connections, so there is no NAT traversal and no RTP port range to open. If you
+develop against a PBX instead, run on the **same LAN as it** — NAT and STUN are the
+single biggest source of "the call connects but there is no audio".
 
 Docker is not required and is not assumed anywhere in the code. All configuration
 comes from environment variables.

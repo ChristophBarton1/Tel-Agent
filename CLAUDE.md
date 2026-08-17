@@ -24,7 +24,7 @@ User-facing *interface strings* are a separate matter: those live in
 
 Milestone 0 is the only milestone that exists right now:
 
-> A 3CX extension (999) rings, a Python script answers, speaks via TTS,
+> A phone number rings, a Python script answers, speaks via TTS,
 > hears the caller via STT, replies via an LLM, takes a message, and prints
 > a transcript. **No UI. No Docker. No database. No routing rules.**
 
@@ -48,8 +48,8 @@ Build order inside Milestone 0. Do not start step N+1 before step N works:
 
 | # | Check | How you know it works |
 |---|---|---|
-| 1 | Register on 999 | The 3CX console shows the extension as registered |
-| 2 | Answer the call | You call 999, it stops ringing, silence on the line |
+| 1 | The number reaches us | The provider console shows the inbound call arriving at our SIP endpoint |
+| 2 | Answer the call | You call the number, it stops ringing, silence on the line |
 | 3 | Speak fixed text | It answers and says a hardcoded greeting |
 | 4 | Hear the caller | Your words appear as text in the terminal |
 | 5 | Full loop | You speak → LLM replies → you hear the reply |
@@ -57,9 +57,9 @@ Build order inside Milestone 0. Do not start step N+1 before step N works:
 
 Steps 1–2 are plumbing. Step 5 is the product.
 
-**Before any code at all:** a softphone (Zoiper, Linphone, MicroSIP) registered
-with the same credentials must be able to call 999 from another internal phone.
-If that fails, the problem is in the PBX and no amount of Python will fix it.
+**Before any code at all:** buy a number, point it at the SIP endpoint, call it from
+a mobile, and confirm in the provider console that the call arrives. If it does not,
+the problem is in the number configuration and no amount of Python will fix it.
 
 ---
 
@@ -69,10 +69,16 @@ Target: **under 800 ms** from end of caller speech to first audio out.
 
 | Stage | Budget |
 |---|---|
-| STT final | ~150 ms |
-| LLM first token | ~300 ms |
+| Endpointing — deciding the caller has finished | ~200 ms |
+| STT final | ~100 ms |
+| LLM first token | ~250 ms |
 | TTS first chunk | ~100 ms |
-| Network / buffer | ~250 ms |
+| Network / buffer | ~150 ms |
+
+**Endpointing is in the budget and is usually the largest single stage.** A plain
+silence threshold of 500–800 ms consumes the entire budget on its own, so semantic
+turn detection is required, not optional. A budget that omits this stage is not a
+budget — measure it separately from the first call.
 
 The first sentence starts speaking while the rest is still being generated.
 **Never wait for a complete LLM response before starting TTS.** This one
@@ -139,7 +145,9 @@ Settled. Do not reopen without a concrete reason.
 | Voice framework | LiveKit Agents |
 | Packaging | Docker Compose (manual dev run also documented) |
 | Runs as | Locally installed web app on the LAN — not a desktop app, not SaaS-only |
-| First test bed | Existing 3CX PBX, extension 999 |
+| First test bed | A number from a SIP provider, pointed at the agent |
+| Number acquisition | Users bring their own number in v1. Reselling numbers belongs to OpenDial Cloud and never enters the open edition |
+| SIP in Milestone 0 | LiveKit Cloud SIP |
 | Theme | Dark and light, dark designed first |
 | Languages | en / de / ar from day one, RTL supported |
 | Analog lines | Out of scope — users bridge with an ATA; we only ever speak SIP |
@@ -147,21 +155,31 @@ Settled. Do not reopen without a concrete reason.
 
 ---
 
-## Open question, not yet decided
+## How SIP is handled in Milestone 0 — decided
 
-**How SIP is handled in Milestone 0.** The specification names LiveKit Agents
-as the voice framework, but LiveKit SIP requires a LiveKit server plus the SIP
-service — which in practice means containers, and Milestone 0 explicitly rules
-out Docker. Options:
+**LiveKit Cloud SIP.** A number from a SIP provider points at a LiveKit Cloud SIP
+trunk; the agent connects to the room. Nothing runs locally except the one script.
 
-- **(a)** Direct SIP via `pjsua2` / `baresip` / `pyVoIP` — genuinely one script,
-  but turn-taking and barge-in are written by hand and later thrown away
-- **(b)** LiveKit self-hosted locally — commits to the framework from day one and
-  gets turn-taking and barge-in for free, at the cost of running two services
-- **(c)** LiveKit Cloud — fastest path to a working call, but media leaves the
-  LAN, which defeats the "same LAN, no NAT" property Milestone 0 relies on
+The objection to this option used to be that media leaves the LAN. That objection
+was written when Milestone 0 assumed an on-premises PBX on the same network. It no
+longer applies: with a provider number the audio crosses the internet either way,
+so the "same LAN, no NAT" property is not available to give up.
 
-Do not pick one unilaterally. Ask the maintainer.
+The two rejected options, and why:
+
+- **Direct SIP** via `pjsua2` / `baresip` / `pyVoIP` — genuinely one script, but
+  turn-taking and barge-in get written by hand and thrown away at Milestone 1.
+  Those two are the hardest part of the whole product; hand-rolling them to save
+  a dependency is the wrong trade.
+- **LiveKit self-hosted** — correct eventually, and required for the on-premises
+  story. It costs two services running before the first call is answered, which
+  is exactly the delay Milestone 0 exists to prevent. It returns at Milestone 9.
+
+**This is a Milestone 0 decision, not the product's architecture.** The shipped
+product must still support a self-hosted media path — an installation whose audio
+is forced through a vendor's cloud contradicts the reason this project exists.
+Anything written now must sit behind the interfaces in §B3, so that swapping the
+transport later is configuration and not a rewrite.
 
 ---
 
@@ -185,9 +203,13 @@ Do not pick one unilaterally. Ask the maintainer.
 - The recording announcement defaults to on — Austria requires both parties to
   be aware, and the requirement still applies once a human joins the call
 
-**Data model** — two decisions that are painful to add later, so they are made now:
+**Data model** — four decisions that are painful to add later, so they are made now:
 1. `user_id` on every table from day one, even while it is always `1`
 2. A full-text index on `transcript_lines.text` in the first migration
+3. `numbers.owner` — customer or platform holds the number. Separates a self-hoster's
+   own number from one resold by OpenDial Cloud, and governs who may release or port it
+4. `calls.billable_seconds` and `calls.provider_cost_micros` — usage metering from the
+   first stored call. Integer micros, never floats
 
 **Git**
 - Commit messages in English, imperative mood
