@@ -25,12 +25,19 @@ transcribed, and searchable.
 
 It runs on your own hardware, on your own LAN, with your own API keys.
 
+The phone comes first and is the hardest case. After it works, the same agent answers
+on **WhatsApp, Telegram, Discord, Messenger and Instagram** — connected with your own
+credentials from each platform, never a shared application of ours. That list is
+closed at five plus the phone.
+
 ## What it is not
 
 - **Not a PBX replacement.** It connects to your existing PBX (3CX, Asterisk, FreePBX)
   as an extension.
 - **Not a workflow automation platform.** Webhooks and a generic HTTP tool reach n8n
-  and Home Assistant, which do that job better.
+  and Home Assistant, which do that job better. A *channel* is where the conversation
+  happens; an *integration* is a system the agent acts on. We own the first and reach
+  the second through the HTTP tool.
 - **Not a CRM.**
 - **Not analog-capable.** Bridge an analog line with an ATA; OpenDial only speaks SIP.
 
@@ -53,7 +60,7 @@ UI, the database, Docker packaging, routing rules — comes after that works.
 The build order is deliberate. The previous attempt at this stalled with plenty of
 plan and no answered call.
 
-**Milestone 0 of 11 — in progress.** The full plan, and what each milestone means, is
+**Milestone 0 of 12 — in progress.** The full plan, and what each milestone means, is
 in [`docs/ROADMAP.md`](docs/ROADMAP.md).
 
 Watch or star the repository if you want to know when it becomes installable.

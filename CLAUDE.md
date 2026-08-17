@@ -122,9 +122,24 @@ That file is the mechanism that gets this project finished.
 | Call routing rules | Analog hardware support |
 | Transcript archive + search | |
 | Tool execution | |
+| **Messaging channels** — WhatsApp, Telegram, Discord, Messenger, Instagram | |
 
 Anything outside the left column is reached through webhooks and the generic
 HTTP tool. n8n and Home Assistant do that job better than we would.
+
+**The line between a channel and an integration.** A **channel** is where the
+conversation happens — the caller or customer is on the other end of it, speaking or
+typing. An **integration** is a system the agent acts *on* while that conversation
+runs. OpenDial owns channels and reaches integrations through the HTTP tool. Without
+this line, "add one more connector" has no end, which is the failure Rule 5 exists to
+prevent.
+
+**Channels do not change the build order.** The phone is the hard case — it is the
+only channel with no interface, no way to show what was understood, sub-second latency
+and a caller who interrupts mid-sentence. Text channels are forgiving, and code
+written to satisfy them is too slow for voice. The phone gets built first and the rest
+are fitted to it. Channels are Milestone 11; nothing about them starts earlier.
+Setup details for all five are in `internal/CHANNELS-REFERENCE.md`.
 
 ---
 
@@ -152,6 +167,7 @@ Settled. Do not reopen without a concrete reason.
 | Languages | en / de / ar from day one, RTL supported |
 | Analog lines | Out of scope — users bridge with an ATA; we only ever speak SIP |
 | Workflow automation | Out of scope — webhooks + generic HTTP tool; n8n does the rest |
+| Messaging channels | In scope, at Milestone 11. WhatsApp, Telegram, Discord, Messenger, Instagram. The customer connects their own app credentials; OpenDial never holds a shared platform app |
 
 ---
 
@@ -192,9 +208,23 @@ transport later is configuration and not a rewrite.
 - Formatting: `ruff format`; linting: `ruff check`
 - Configuration comes from environment variables only. Never assume Docker.
 
-**Secrets**
-- API keys and SIP credentials live in `.env`, which is gitignored
-- Never log a key, never commit one, never return one in full to a client
+**Secrets** — two kinds, two homes (full reasoning in §B9.2)
+- **`.env`** holds *installation* secrets: `DATABASE_URL`, `REDIS_URL`,
+  `ENCRYPTION_KEY`, and the LiveKit keys. One set per installation, set once by
+  whoever runs the server
+- **The database, encrypted**, holds *user-entered* credentials: provider API keys,
+  per-number SIP credentials, and channel tokens. Entered from the UI, changeable
+  without a restart, and there can be many of each
+- `ENCRYPTION_KEY` in `.env` is what encrypts those columns. It must never sit in the
+  same place as the data it protects
+- **`.env` is not the safer option for user credentials.** It is plaintext on disk, so
+  one file read exposes everything; encrypted columns force an attacker to obtain both
+  the database and the key. Database dumps, backups and read replicas are where
+  credentials actually leak
+- Milestone 0 is the exception — no database exists yet, so everything is in `.env`.
+  This ends at Milestone 2. Never build a settings screen that writes to `.env`
+- Never log a key, never commit one, never return one in full to a client — the UI
+  shows a masked preview with the last four characters
 - `.env.example` documents every variable with a safe placeholder
 
 **Call data**

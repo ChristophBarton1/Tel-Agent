@@ -1,6 +1,6 @@
 # Roadmap
 
-Eleven milestones. **Step N+1 does not start before step N works.**
+Twelve milestones. **Step N+1 does not start before step N works.**
 
 This is the public, milestone-level view. Day-to-day tasks live in
 [GitHub Issues](https://github.com/Dpro-at/OpenDial/issues); ideas that are not in v1
@@ -139,6 +139,25 @@ run the code without rebuilding an image on every edit.
 A thin layer over the REST API, with hard limits. An external model that can start
 real calls spends real money.
 
+## 11 — Messaging channels
+
+WhatsApp, Telegram, Discord, Messenger and Instagram. The same agent, the same tools,
+the same searchable archive — a different transport. **The list is closed at five plus
+the phone.**
+
+The customer connects credentials from their own developer account on each platform.
+OpenDial never holds a shared platform application: one shared app would put every
+installation behind a single rate limit and make one policy violation everybody's
+outage.
+
+**This is last on purpose.** The phone is the hard case — no interface, no way to show
+the caller what was understood, a sub-second latency budget, and a caller who
+interrupts mid-sentence. Text channels are forgiving, and an architecture built to
+satisfy them would look healthy while being far too slow for voice. Build for the
+phone, then fit the rest to it.
+
+Setup requirements per channel are specified in `docs/SPEC.md` §B13.
+
 ---
 
 ## Not on this roadmap
@@ -146,7 +165,7 @@ real calls spends real money.
 | | Why |
 |---|---|
 | General workflow automation | Webhooks and a generic HTTP tool reach n8n and Home Assistant, which do it better |
-| Integrations with SaaS applications | Same |
+| Integrations with SaaS applications | A **channel** is where the conversation happens; an **integration** is a system the agent acts on. We own the first and reach the second through the HTTP tool. Channels are a closed list of six; integrations are unbounded, which is why they are somebody else's product |
 | Being a CRM | Not what this is |
 | Being a PBX replacement | It connects to your PBX as an extension |
 | Analog hardware support | We only ever speak SIP. A genuinely analog line is bridged with an ATA — see the requirements in the README |

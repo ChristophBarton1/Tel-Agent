@@ -169,6 +169,7 @@ These are settled. Do not reopen them without a concrete reason.
 | Languages | Multi-language from day one: en / de / ar, RTL supported |
 | Analog phone lines | Out of scope. Users bridge with an ATA; we only ever speak SIP. |
 | Workflow automation | Out of scope. Webhooks + generic HTTP tool; n8n does the rest. |
+| Messaging channels | In scope at Milestone 11 — WhatsApp, Telegram, Discord, Messenger, Instagram. Closed list. Customer connects their own app credentials (§B13). |
 
 ---
 
@@ -193,9 +194,17 @@ searchable.
 | Call routing rules | Analog hardware support |
 | Transcript archive + search | |
 | Tool execution | |
+| **Messaging channels** (§B13) | |
 
 Everything outside the left column is reached through **webhooks** and the **generic
 HTTP tool**. n8n and Home Assistant do that job better than we would.
+
+**Channel or integration — the distinction that keeps this table finite.**
+A **channel** is where the conversation happens: the person is on the other end of it,
+speaking or typing. An **integration** is a system the agent acts *on* during that
+conversation. OpenDial owns channels and reaches integrations through the HTTP tool.
+Six channels are in scope and the list is closed (§B13). Integrations are unbounded by
+nature, which is why they are somebody else's product.
 
 ## Users
 
@@ -417,18 +426,25 @@ Appears whenever a call is active, reachable from anywhere in the app.
     voices it** (important for users who don't want to speak).
   - **Hand off** — transfer to a real phone and exit.
 
-### A6.8 Settings — one screen, seven tabs
+### A6.8 Settings — one screen, eight tabs
 
 1. **General** — interface language, theme, timezone, agent display name
 2. **Providers** — STT / LLM / TTS: provider, key, "Test connection", est. cost/min
 3. **Numbers** — connected numbers, add another, per-number agent assignment, status
-4. **Routing** — forwarding target, business hours, failover
-5. **Integrations** — webhooks in/out (with "Send test"), n8n URL, notification channel
+4. **Channels** (§B13, Milestone 11) — one card per channel: connect, per-channel agent
+   assignment, status. Every card holds credentials the customer created in their own
+   developer account, so each needs a **"Test connection"** that proves the link rather
+   than claiming it, and each shows the saved token **masked to its last four
+   characters** — never in full, per §B9. Telegram can register its own webhook from
+   this screen; the Meta channels cannot, and their setup steps must be spelled out
+   here rather than left to a support article
+5. **Routing** — forwarding target, business hours, failover
+6. **Integrations** — webhooks in/out (with "Send test"), n8n URL, notification channel
    (Telegram / email), MCP endpoint + token
-6. **Privacy & recording** — recording on/off, retention period, **automatic recording
+7. **Privacy & recording** — recording on/off, retention period, **automatic recording
    announcement (ON by default — legally required in Austria, and it must cover human
    takeover too, not only the agent)**, data export, data deletion
-7. **System** — version, updates, logs, config export/import, reset
+8. **System** — version, updates, logs, config export/import, reset
 
 ### A6.9 Standalone pages
 
@@ -764,6 +780,52 @@ On the PBX: use a strong extension password, do not expose SIP to the internet, 
 disable outbound calling on the agent's extension entirely while the agent only
 answers.
 
+## B9.2 Where credentials live — `.env` or database
+
+Two kinds of secret, two homes. Confusing them is why this section exists.
+
+| | `.env` | Database, encrypted |
+|---|---|---|
+| What | Installation secrets | Credentials the user enters |
+| Examples | `DATABASE_URL`, `REDIS_URL`, **`ENCRYPTION_KEY`**, LiveKit keys in Milestone 0 | STT / LLM / TTS API keys, SIP credentials per number, channel tokens (§B13) |
+| Set by | Whoever runs the server, once | The user, from the UI, at any time |
+| How many | Exactly one set per installation | Many — several numbers, five channels, one key per provider |
+| Changing it | Restart | Takes effect immediately |
+
+**The bridge between them:** `ENCRYPTION_KEY` lives in `.env` and is what encrypts the
+credential columns in the database. Lose it and every stored credential is
+unrecoverable; leak it and encryption at rest bought nothing.
+
+### Why channel tokens must not go in `.env`
+
+Four reasons, and the first alone settles it:
+
+1. **They are entered from the UI.** §A6.8 tab 4 connects a channel by pasting a token
+   and pressing *Test connection*. Nothing in that flow can edit a file on the server
+   and restart the process.
+2. **There can be more than one of each.** Two Telegram bots, two WhatsApp numbers, a
+   separate agent per channel — environment variables have no natural plural.
+3. **OAuth tokens are refreshed.** A `.env` that rewrites itself while the process runs
+   is a class of bug nobody wants.
+4. **The hosted edition needs one row per tenant.** A single-valued file cannot express
+   that, and retrofitting it later means moving every stored credential.
+
+So: **the credential goes in the database, encrypted; the key that encrypts it goes in
+`.env`.** This is also what §B9 already requires — encrypted at rest, never returned in
+full to the client, shown in the UI only as a masked preview with the last four
+characters visible.
+
+### Milestone 0 is the exception, and only until Milestone 2
+
+There is no database in Milestone 0, so everything is in `.env` — including the
+provider keys. That is correct for one script in a terminal and wrong for anything
+with a UI. The move happens at Milestone 2, when persistence arrives; do not build a
+settings screen that writes to `.env`.
+
+**Unchanged in all cases:** never log a credential, never commit one, never return one
+in full to a client, and `.env.example` documents every variable with a safe
+placeholder.
+
 ## B10. Deployment
 
 ```bash
@@ -796,6 +858,12 @@ Do not start step N+1 before step N works.
 | 8 | Health + alerts | B8 complete |
 | 9 | Docker packaging | One-command install |
 | 10 | MCP server | Thin layer over the REST API, with hard limits |
+| 11 | Messaging channels | The five in §B13, same agent and tools, different transport |
+
+**Milestone 11 sits last on purpose.** The phone is the hard case — no interface, no
+way to show the caller what was understood, sub-second latency, and interruption
+mid-sentence. Text channels are forgiving and would let a slow architecture look
+healthy. Build for voice, then fit the rest to it.
 
 **Milestone 0 is the only one that matters right now.** If it works within two weeks,
 everything above is worth building. If it doesn't, that is valuable information gained
@@ -827,6 +895,78 @@ a network service, and you must publish your modifications.
 
 *Commercial and ownership strategy is maintained privately and is not part of this
 specification.*
+
+## B13. Messaging channels — Milestone 11
+
+Five text channels alongside the phone: **WhatsApp · Telegram · Discord · Messenger ·
+Instagram**. The same agent, the same tools, the same transcript archive; a different
+transport.
+
+**The list is closed.** Six channels total including the phone. Adding a seventh is a
+decision to reopen this section, not a pull request.
+
+### The customer connects their own app
+
+Every channel stores per-tenant credentials that the customer creates in **their own**
+developer account. OpenDial never holds a shared platform application.
+
+This is the same reasoning as §B3.1 for phone numbers, and it is not only about
+philosophy: one shared app puts every installation behind one rate limit, and makes a
+single policy violation everybody's outage. It is also what keeps OpenDial installable
+by a stranger from GitHub with no account at Dpro.
+
+Token handling follows §B9 exactly — encrypted at rest, excluded from every API
+response, and surfaced to the UI only as a masked preview showing the last four
+characters, so the settings screen can show *which* credential is saved without
+revealing it.
+
+Per-channel credential fields, how the customer obtains them, webhook wiring and the
+platform limits that shape design are in `internal/CHANNELS-REFERENCE.md`.
+
+### What is shared and what is not
+
+| | Shared with the phone | Channel-specific |
+|---|---|---|
+| Agent persona, knowledge, tools | ✅ | |
+| Transcript storage and search | ✅ | |
+| Routing rules, business hours | ✅ | |
+| Structured capture (§B7 `take_message`) | ✅ | |
+| Transport, credentials, webhooks | | ✅ |
+| Rich replies — buttons, lists, forms | | ✅ |
+| Turn-taking, barge-in, endpointing, streaming | **phone only** | |
+
+The last row is the important one. Every text channel shares one property that makes
+it easy: **the user waits.** A two-second pause in a chat is invisible; the same pause
+on a call sounds like the line dropped. Nothing in the audio path has an equivalent in
+the text channels, and nothing written for the text channels is fast enough for voice.
+
+### How much conversation machinery each channel needs
+
+Decided by how much interface the platform provides, not by preference:
+
+| Channel | Interface offered | State needed |
+|---|---|---|
+| Discord | Native modal — a real form | None. One submission arrives complete |
+| Telegram | Inline keyboards, Mini Apps | Light |
+| WhatsApp / Messenger / Instagram | Buttons and list menus | Full step machine |
+| **Phone** | **Nothing at all** | **Full step machine, plus interruption** |
+
+The phone is the extreme case of this scale, which is why it is built first and the
+rest fitted to it. See §B11.
+
+### Data model additions
+
+```
+channels          id, user_id, kind(phone|whatsapp|telegram|discord|messenger|instagram),
+                  name, credentials_encrypted, webhook_secret, webhook_path,
+                  default_language, agent_id, status
+conversations     id, user_id, channel_id, external_id, contact_id, state_json,
+                  mode, last_message_at
+```
+
+`calls` and `transcript_lines` generalise rather than duplicate: a phone call is a
+conversation whose channel kind is `phone`. Deciding this at Milestone 2 costs
+nothing; discovering it at Milestone 11 is a migration across every stored transcript.
 
 ---
 
