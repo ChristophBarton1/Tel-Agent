@@ -83,7 +83,7 @@ string length.
 
 ### `examples/workflows/`
 Importable n8n JSON examples. Workflow automation is explicitly out of scope for
-OpenDial; these show how to reach it through webhooks and the generic HTTP tool.
+Tel-Agent; these show how to reach it through webhooks and the generic HTTP tool.
 
 ---
 

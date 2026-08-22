@@ -1,6 +1,6 @@
 # Security Policy
 
-OpenDial answers phone calls, holds provider API keys, and can place outbound calls
+Tel-Agent answers phone calls, holds provider API keys, and can place outbound calls
 that cost real money. Security reports are taken seriously.
 
 ---
@@ -33,7 +33,7 @@ You will be credited in the fix unless you prefer otherwise.
 |---|---|
 | pre-alpha (`main`) | Fixes land on `main` |
 
-**There is no released version yet.** OpenDial is at Milestone 0 and is not ready for
+**There is no released version yet.** Tel-Agent is at Milestone 0 and is not ready for
 production use. Do not run it on a business phone line.
 
 ---
@@ -59,10 +59,10 @@ production use. Do not run it on a business phone line.
 
 - **Deployment choices the operator makes.** Exposing the port to the internet,
   reusing a weak SIP password, or skipping HTTPS are documented risks, not
-  vulnerabilities in OpenDial. The documentation states the supported paths: VPN,
+  vulnerabilities in Tel-Agent. The documentation states the supported paths: VPN,
   Tailscale, or a reverse proxy with HTTPS.
 - **Vulnerabilities in third-party providers.** Report those to the provider. Tell us
-  as well if OpenDial's use of them makes the impact worse.
+  as well if Tel-Agent's use of them makes the impact worse.
 - Missing hardening headers or similar findings with no demonstrated impact.
 - Anything requiring an attacker to already have administrative access.
 
@@ -76,7 +76,7 @@ Until there is a release, these matter more than any code fix:
   proxy with HTTPS.
 - **Configure geographic dialling permissions at your telephony provider** and disable
   every country you do not need to call. This is the single most effective protection
-  against toll fraud, it is free, and it works even if OpenDial itself has a bug.
+  against toll fraud, it is free, and it works even if Tel-Agent itself has a bug.
   It is **not** enabled by default on a new provider account.
 - **Use a strong password on the SIP extension.** Brute-forcing weak extension
   credentials is a common way in.

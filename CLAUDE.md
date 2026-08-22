@@ -1,4 +1,4 @@
-# CLAUDE.md — working rules for OpenDial
+# CLAUDE.md — working rules for Tel-Agent
 
 Guidance for Claude Code (and any AI assistant) working in this repository.
 Read this before touching anything.
@@ -11,7 +11,7 @@ Read this before touching anything.
 are written in English.** No exceptions, regardless of the language used in
 conversation.
 
-The maintainer communicates in Arabic; the codebase does not. OpenDial is a
+The maintainer communicates in Arabic; the codebase does not. Tel-Agent is a
 public AGPL-3.0 project aimed at an international contributor base, and an
 Arabic codebase would close the door on outside contributions.
 
@@ -113,7 +113,7 @@ Log these on every call, starting with the very first one:
 Every good idea that arrives mid-build goes into `IDEAS.md`, not into the code.
 That file is the mechanism that gets this project finished.
 
-| OpenDial owns | OpenDial does NOT own |
+| Tel-Agent owns | Tel-Agent does NOT own |
 |---|---|
 | Telephony / SIP | General workflow automation |
 | Voice pipeline (STT → LLM → TTS) | Integrations with 400 SaaS apps |
@@ -122,7 +122,7 @@ That file is the mechanism that gets this project finished.
 | Call routing rules | Analog hardware support |
 | Transcript archive + search | |
 | Tool execution | |
-| **Messaging channels** — WhatsApp, Telegram, Discord, Messenger, Instagram | |
+| **Messaging channels** — web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord | |
 
 Anything outside the left column is reached through webhooks and the generic
 HTTP tool. n8n and Home Assistant do that job better than we would.
@@ -130,7 +130,7 @@ HTTP tool. n8n and Home Assistant do that job better than we would.
 **The line between a channel and an integration.** A **channel** is where the
 conversation happens — the caller or customer is on the other end of it, speaking or
 typing. An **integration** is a system the agent acts *on* while that conversation
-runs. OpenDial owns channels and reaches integrations through the HTTP tool. Without
+runs. Tel-Agent owns channels and reaches integrations through the HTTP tool. Without
 this line, "add one more connector" has no end, which is the failure Rule 5 exists to
 prevent.
 
@@ -139,7 +139,7 @@ only channel with no interface, no way to show what was understood, sub-second l
 and a caller who interrupts mid-sentence. Text channels are forgiving, and code
 written to satisfy them is too slow for voice. The phone gets built first and the rest
 are fitted to it. Channels are Milestone 11; nothing about them starts earlier.
-Setup details for all five are in `internal/CHANNELS-REFERENCE.md`.
+Setup details per channel are in `internal/CHANNELS-REFERENCE.md`.
 
 ---
 
@@ -149,8 +149,8 @@ Settled. Do not reopen without a concrete reason.
 
 | Decision | Choice |
 |---|---|
-| Name | **OpenDial** — hosted edition is "OpenDial Cloud" |
-| Domain | `opendial.dev` |
+| Name | **Tel-Agent** — hosted edition is "Tel-Agent Cloud" |
+| Domain | `tel-agent.com` |
 | License | AGPL-3.0 + CLA from the first contributor |
 | Copyright holder | Dpro GmbH (Vienna) |
 | Separate from | Agent-Player and Flowxtra — own repo, no shared code without a written arrangement |
@@ -161,13 +161,13 @@ Settled. Do not reopen without a concrete reason.
 | Packaging | Docker Compose (manual dev run also documented) |
 | Runs as | Locally installed web app on the LAN — not a desktop app, not SaaS-only |
 | First test bed | A number from a SIP provider, pointed at the agent |
-| Number acquisition | Users bring their own number in v1. Reselling numbers belongs to OpenDial Cloud and never enters the open edition |
+| Number acquisition | Users bring their own number in v1. Reselling numbers belongs to Tel-Agent Cloud and never enters the open edition |
 | SIP in Milestone 0 | LiveKit Cloud SIP |
 | Theme | Dark and light, dark designed first |
 | Languages | en / de / ar from day one, RTL supported |
 | Analog lines | Out of scope — users bridge with an ATA; we only ever speak SIP |
 | Workflow automation | Out of scope — webhooks + generic HTTP tool; n8n does the rest |
-| Messaging channels | In scope, at Milestone 11. WhatsApp, Telegram, Discord, Messenger, Instagram. The customer connects their own app credentials; OpenDial never holds a shared platform app |
+| Messaging channels | In scope, at Milestone 11. Nine including the phone: web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord. Closed list. The customer connects their own app credentials; Tel-Agent never holds a shared platform app |
 
 ---
 
@@ -196,6 +196,22 @@ product must still support a self-hosted media path — an installation whose au
 is forced through a vendor's cloud contradicts the reason this project exists.
 Anything written now must sit behind the interfaces in §B3, so that swapping the
 transport later is configuration and not a rewrite.
+
+---
+
+## Never name a competitor in public
+
+**No competing product or company is named anywhere public** — not in the repository,
+a commit message, an issue, a pull request, the README, the specification, the website,
+a release note, or a social post. In any language, in any spelling, not once.
+
+Describe what Tel-Agent *is*. Never describe who it is against.
+
+**This is not reversible.** A name that reaches a public repository stays in the git
+history, in every fork, and in anything that mirrored it. Deleting the file afterwards
+does not remove it. So the check happens **before** the commit, not after.
+
+Competitive notes belong in , which is gitignored and never published.
 
 ---
 
@@ -237,7 +253,7 @@ transport later is configuration and not a rewrite.
 1. `user_id` on every table from day one, even while it is always `1`
 2. A full-text index on `messages.text` in the first migration
 3. `numbers.owner` — customer or platform holds the number. Separates a self-hoster's
-   own number from one resold by OpenDial Cloud, and governs who may release or port it
+   own number from one resold by Tel-Agent Cloud, and governs who may release or port it
 4. `calls.billable_seconds` and `calls.provider_cost_micros` — usage metering from the
    first stored call. Integer micros, never floats
 5. `messages.stt_confidence` and `.language` — per line. Turns "German accuracy" from

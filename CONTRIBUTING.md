@@ -1,4 +1,4 @@
-# Contributing to OpenDial
+# Contributing to Tel-Agent
 
 Thank you for looking at this. Please read the first section before opening a pull
 request — it will save you time.
@@ -7,7 +7,7 @@ request — it will save you time.
 
 ## Read this first: the project is pre-alpha
 
-OpenDial is at **Milestone 0**: getting a single real phone call answered by an AI
+Tel-Agent is at **Milestone 0**: getting a single real phone call answered by an AI
 voice, with the message captured and the transcript printed. There is no installable
 release, no web UI, and no database yet.
 
@@ -34,7 +34,7 @@ specification, and anything that helps Milestone 0 work.
 merged.** No exceptions, including for one-line fixes.
 
 You keep full ownership and copyright of your work. The CLA grants Dpro GmbH a licence
-to use and relicense it, which is what allows OpenDial to be released under AGPL-3.0
+to use and relicense it, which is what allows Tel-Agent to be released under AGPL-3.0
 while a hosted edition and a commercial licence exist alongside it.
 
 To accept, add this line to your pull request description:
@@ -59,8 +59,8 @@ translated into `en`, `de` and `ar`. Translations are very welcome.
 ## Development setup
 
 ```bash
-git clone https://github.com/Dpro-at/OpenDial.git
-cd OpenDial
+git clone https://github.com/Dpro-at/Tel-Agent.git
+cd Tel-Agent
 cp .env.example .env    # fill in your own keys
 ```
 

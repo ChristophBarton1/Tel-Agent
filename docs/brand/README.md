@@ -1,7 +1,7 @@
 # Brand assets — Dpro GmbH
 
-These are the **Dpro GmbH** company assets, not OpenDial product assets.
-OpenDial has its own identity; see "How these are used" below.
+These are the **Dpro GmbH** company assets, not Tel-Agent product assets.
+Tel-Agent has its own identity; see "How these are used" below.
 
 ## Files
 
@@ -41,20 +41,20 @@ busy background it will read as a hole, so give the logo a clear area.
 
 ## How these are used
 
-OpenDial is a separate product with its own identity — the specification is explicit
+Tel-Agent is a separate product with its own identity — the specification is explicit
 that it stays separate from Dpro's other projects. So:
 
 - **Use these** for company attribution: the README footer, the CLA, documentation,
   "maintained by Dpro GmbH".
-- **Do not use these** as the OpenDial application's own logo, favicon, or interface
-  chrome. OpenDial needs its own mark.
+- **Do not use these** as the Tel-Agent application's own logo, favicon, or interface
+  chrome. Tel-Agent needs its own mark.
 
 ### Two things to settle before the interface uses any of this
 
 **1. The brand orange collides with a semantic colour.** The design specification
 assigns **amber** to "needs attention". Dpro orange `#F7941D` is close enough to amber
 that using it as the interface accent would make every accent element look like a
-warning. If an OpenDial accent is derived from this palette, take it from the purple,
+warning. If an Tel-Agent accent is derived from this palette, take it from the purple,
 not the orange.
 
 **2. The purple is too dark for a dark theme.** `#652D91` on a near-black background

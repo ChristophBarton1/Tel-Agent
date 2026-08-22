@@ -1,13 +1,13 @@
 <div align="center">
 
-# OpenDial
+# Tel-Agent
 
 **Connect any phone line to any AI model. Self-hosted, bring your own keys.**
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange.svg)](#project-status)
 
-[opendial.dev](https://opendial.dev) · maintained by [Dpro GmbH](https://dpro.at), Vienna
+[tel-agent.com](https://tel-agent.com) · maintained by [Dpro GmbH](https://dpro.at), Vienna
 
 </div>
 
@@ -15,9 +15,9 @@
 
 ## What it is
 
-OpenDial is an open-source gateway that sits between a phone line and an AI agent.
+Tel-Agent is an open-source gateway that sits between a phone line and an AI agent.
 
-A call arrives over SIP. OpenDial checks the caller against your routing rules and
+A call arrives over SIP. Tel-Agent checks the caller against your routing rules and
 either passes it through to a human, blocks it, or hands it to an AI agent. The agent
 speaks with the caller in real time, can invoke tools — transfer the call, take a
 message, check a calendar, call any HTTP endpoint — and every call is recorded,
@@ -26,9 +26,11 @@ transcribed, and searchable.
 It runs on your own hardware, on your own LAN, with your own API keys.
 
 The phone comes first and is the hardest case. After it works, the same agent answers
-on **WhatsApp, Telegram, Discord, Messenger and Instagram** — connected with your own
-credentials from each platform, never a shared application of ours. That list is
-closed at five plus the phone.
+on **web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram and Discord** —
+connected with your own credentials from each platform, never a shared application of
+ours. **Nine channels, and the list is closed.** A channel is a route a customer uses
+to reach you; a system you run your own business on is an integration, and those are
+reached through webhooks and the HTTP tool.
 
 ## What it is not
 
@@ -39,7 +41,7 @@ closed at five plus the phone.
   happens; an *integration* is a system the agent acts on. We own the first and reach
   the second through the HTTP tool.
 - **Not a CRM.**
-- **Not analog-capable.** Bridge an analog line with an ATA; OpenDial only speaks SIP.
+- **Not analog-capable.** Bridge an analog line with an ATA; Tel-Agent only speaks SIP.
 
 ## Why it exists
 
@@ -94,8 +96,8 @@ generated.
 Not available yet. Once Milestone 9 lands, this section becomes:
 
 ```bash
-git clone https://github.com/Dpro-at/OpenDial.git
-cd OpenDial
+git clone https://github.com/Dpro-at/Tel-Agent.git
+cd Tel-Agent
 cp .env.example .env    # add your API keys
 docker compose up -d
 ```
@@ -116,7 +118,7 @@ Until then, see [`docs/SPEC.md`](docs/SPEC.md) for the full design and
 | A landline from an ISP | These are IP-based now. Either the provider gives you SIP credentials, or your router acts as a SIP registrar and you register against it — common with Fritz!Box in Austria and Germany | None |
 | A genuinely analog line — old copper, a fax line | An ATA to bridge it, e.g. a Grandstream HT801 | ~€30 |
 
-OpenDial only ever speaks SIP. That is deliberate: supporting telephony hardware
+Tel-Agent only ever speaks SIP. That is deliberate: supporting telephony hardware
 directly is a project of its own, and an ATA solves it for about the price of a
 cable.
 
@@ -153,7 +155,7 @@ Found a security problem? **Do not open a public issue** — see
 
 [AGPL-3.0](LICENSE). Copyright © Dpro GmbH.
 
-If you run a modified version of OpenDial as a network service, you must publish your
+If you run a modified version of Tel-Agent as a network service, you must publish your
 modifications. The free version is never crippled; it is the product.
 
 For a commercial license permitting closed-source integration, contact

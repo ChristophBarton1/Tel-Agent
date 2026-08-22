@@ -42,7 +42,7 @@ Latency impact:
 
 ## Before you open this
 
-OpenDial is at **Milestone 0** — one real phone call, answered, message taken,
+Tel-Agent is at **Milestone 0** — one real phone call, answered, message taken,
 transcript printed. Nothing else is being built yet.
 
 **Feature PRs will be pointed at [IDEAS.md](../IDEAS.md) rather than merged.** That is

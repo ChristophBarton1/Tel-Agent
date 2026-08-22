@@ -3,7 +3,7 @@
 Twelve milestones. **Step N+1 does not start before step N works.**
 
 This is the public, milestone-level view. Day-to-day tasks live in
-[GitHub Issues](https://github.com/Dpro-at/OpenDial/issues); ideas that are not in v1
+[GitHub Issues](https://github.com/Dpro-at/Tel-Agent/issues); ideas that are not in v1
 live in [`IDEAS.md`](../IDEAS.md).
 
 ---
@@ -150,12 +150,18 @@ real calls spends real money.
 
 ## 11 — Messaging channels
 
-WhatsApp, Telegram, Discord, Messenger and Instagram. The same agent, the same tools,
-the same searchable archive — a different transport. **The list is closed at five plus
-the phone.**
+Web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram and Discord. The same
+agent, the same tools, the same searchable archive — a different transport.
+**Nine channels including the phone, and the list is closed.**
+
+The line that keeps it closed: A channel is any route a **customer** uses to reach a business. It is not any system the business itself runs on — Slack, Teams and project trackers are integrations, reached through the HTTP tool. Without that line, "add one more
+connector" has no end.
+
+Web chat, SMS and email come first of the eight: web chat needs no platform approval
+at all, and SMS arrives with the telephony account the phone already uses.
 
 The customer connects credentials from their own developer account on each platform.
-OpenDial never holds a shared platform application: one shared app would put every
+Tel-Agent never holds a shared platform application: one shared app would put every
 installation behind a single rate limit and make one policy violation everybody's
 outage.
 

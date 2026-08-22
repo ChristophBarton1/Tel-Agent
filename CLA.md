@@ -1,14 +1,14 @@
 # Contributor License Agreement
 
-**OpenDial — Dpro GmbH, Vienna, Austria**
+**Tel-Agent — Dpro GmbH, Vienna, Austria**
 
-Thank you for your interest in contributing to OpenDial.
+Thank you for your interest in contributing to Tel-Agent.
 
 This agreement must be accepted before your first contribution is merged. It is
 short, and it does not take your rights away — you keep full ownership of everything
 you write.
 
-> **Why this exists.** OpenDial is released under AGPL-3.0. For the project to be
+> **Why this exists.** Tel-Agent is released under AGPL-3.0. For the project to be
 > able to offer a hosted edition and a commercial license alongside the open source
 > release, one party has to hold the right to relicense the combined work. That right
 > can only be granted by the contributors, and only at the time they contribute. It
@@ -21,7 +21,7 @@ you write.
 **"You"** means the individual or legal entity accepting this agreement.
 
 **"Contribution"** means any original work of authorship — including any
-modification to an existing work — that You intentionally submit to the OpenDial
+modification to an existing work — that You intentionally submit to the Tel-Agent
 project, in any form and through any medium, including pull requests, patches, and
 issue attachments.
 
@@ -48,7 +48,7 @@ display, publicly perform, sublicense, and distribute Your Contribution and any
 derivative works.
 
 **This includes the right to relicense Your Contribution**, including under
-proprietary or commercial license terms, as part of OpenDial or its hosted edition.
+proprietary or commercial license terms, as part of Tel-Agent or its hosted edition.
 
 You retain the right to use Your Contribution for any other purpose, including
 licensing it to others under different terms.

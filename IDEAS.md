@@ -56,7 +56,7 @@ These are already described in `docs/SPEC.md` and scheduled, just not now.
 
 ## Distribution
 
-- **n8n community node for OpenDial** — one of the strongest distribution channels
+- **n8n community node for Tel-Agent** — one of the strongest distribution channels
   available; a large community actively looks for new nodes.
 - **A 30-second video of a real call** — carries more weight than any README section.
 - **Launches on Hacker News and r/selfhosted** — an excellent project nobody finds is
@@ -67,7 +67,7 @@ These are already described in `docs/SPEC.md` and scheduled, just not now.
 
 ## Open questions
 
-- **Trademark position on "OpenDial"** (EUIPO classes 9 and 42). An older academic
+- **Trademark position on "Tel-Agent"** (EUIPO classes 9 and 42). An older academic
   dialogue-systems framework shares the name. Confirm before committing to a logo.
   *Not legal advice.*
 - ~~**How SIP is handled in Milestone 0**~~ — **answered 2026-08-17: LiveKit Cloud
@@ -85,7 +85,7 @@ These are already described in `docs/SPEC.md` and scheduled, just not now.
 
 *(Add new entries below. Date them.)*
 
-**2026-08-17 — Selling numbers to customers (OpenDial Cloud only).**
+**2026-08-17 — Selling numbers to customers (Tel-Agent Cloud only).**
 Dpro GmbH holds numbers at Twilio and assigns them to customers, who then forward
 their existing line to the assigned number on no-answer after a set number of seconds.
 Onboarding collapses to one button instead of a provider account, a document upload
@@ -110,3 +110,19 @@ What was *not* deferred, because it is cheap now and expensive later: `numbers.o
 Whoever forwards a call usually pays for the forwarded leg in the EU. A surprise on
 the first invoice costs more trust than it saves in setup friction, so this belongs in
 the onboarding copy, not in a support article.
+
+**2026-08-22 — The voice orb as a product component.**
+The landing page ends with a sphere that scales to the amplitude of whatever is
+speaking, read from an `AnalyserNode`. The same component would work inside the
+product: a live call view where the orb moves as the caller and the agent speak,
+and a browser-based web chat where the visitor can talk instead of type.
+
+Worth writing down because of one property that is easy to lose: it is a conic
+gradient, three shadows and about twenty lines of JavaScript. **No Three.js, no
+shader pack, no npm package, nothing to license** — so unlike the animation library
+used on the landing page, it can go straight into `web/` without an AGPL question.
+
+Deferred because Milestone 0 is the only milestone. Revisit at Milestone 6 (the call
+view) or Milestone 11 (web chat), whichever arrives first. The reference
+implementation and five rejected alternatives are in
+`internal/brand-explorations/scroll-test/orb-lab/`.

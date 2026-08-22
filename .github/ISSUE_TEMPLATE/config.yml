@@ -1,15 +1,15 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability
-    url: https://github.com/Dpro-at/OpenDial/security/advisories/new
+    url: https://github.com/Dpro-at/Tel-Agent/security/advisories/new
     about: >-
       Never report a security problem in a public issue. Use private vulnerability
       reporting, or email info@dpro.at with SECURITY in the subject.
   - name: Feature idea
-    url: https://github.com/Dpro-at/OpenDial/blob/main/IDEAS.md
+    url: https://github.com/Dpro-at/Tel-Agent/blob/main/IDEAS.md
     about: >-
       The project is at Milestone 0 and nothing beyond it is being built yet. Ideas are
       parked in IDEAS.md until the first call works. Open a discussion to suggest one.
   - name: Read the specification first
-    url: https://github.com/Dpro-at/OpenDial/blob/main/docs/SPEC.md
-    about: Most questions about what OpenDial does and does not do are answered there.
+    url: https://github.com/Dpro-at/Tel-Agent/blob/main/docs/SPEC.md
+    about: Most questions about what Tel-Agent does and does not do are answered there.

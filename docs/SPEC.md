@@ -1,10 +1,10 @@
-# OpenDial — Complete Build Specification
+# Tel-Agent — Complete Build Specification
 
 > Open-source gateway that connects any phone line to any AI model.
 > Self-hosted. Bring your own keys. Full control over who gets through.
 
-**Project:** OpenDial · `opendial.dev` · AGPL-3.0 · maintained by Dpro GmbH (Vienna)
-**Hosted edition (later):** OpenDial Cloud
+**Project:** Tel-Agent · `tel-agent.com` · AGPL-3.0 · maintained by Dpro GmbH (Vienna)
+**Hosted edition (later):** Tel-Agent Cloud
 
 This document is the single source of truth for design and implementation.
 Section A is for the designer. Section B is for the developer. Read both.
@@ -122,7 +122,7 @@ Once milestone 0 works:
 ## Repo setup (do this today, takes 20 minutes)
 
 ```
-opendial/
+tel-agent/
 ├── LICENSE          # AGPL-3.0
 ├── CLA.md           # before the first PR — after that it's practically impossible
 ├── README.md        # one-liner, what it is, what it is not, quick start
@@ -151,8 +151,8 @@ These are settled. Do not reopen them without a concrete reason.
 
 | Decision | Choice |
 |---|---|
-| Name | **OpenDial** — one name for everything. Hosted edition is "OpenDial Cloud". |
-| Domain | `opendial.dev` |
+| Name | **Tel-Agent** — one name for everything. Hosted edition is "Tel-Agent Cloud". |
+| Domain | `tel-agent.com` |
 | License | AGPL-3.0 + CLA from the first contributor |
 | Copyright holder | Dpro GmbH |
 | Separate from | Agent-Player and Flowxtra — own repo, own identity, no shared code without a written arrangement |
@@ -163,13 +163,13 @@ These are settled. Do not reopen them without a concrete reason.
 | Packaging | Docker Compose (manual dev run also documented) |
 | Runs as | Locally installed web app on the LAN — not a desktop app, not SaaS-only |
 | First test bed | A number from a SIP provider, pointed at the agent |
-| Number acquisition | Users bring their own number in v1. Reselling numbers belongs to OpenDial Cloud and never enters the open edition — see §B3.1 |
+| Number acquisition | Users bring their own number in v1. Reselling numbers belongs to Tel-Agent Cloud and never enters the open edition — see §B3.1 |
 | SIP in Milestone 0 | LiveKit Cloud SIP. A Milestone 0 decision only; the self-hosted media path returns at Milestone 9 |
 | Theme | Dark and light, dark designed first |
 | Languages | Multi-language from day one: en / de / ar, RTL supported |
 | Analog phone lines | Out of scope. Users bridge with an ATA; we only ever speak SIP. |
 | Workflow automation | Out of scope. Webhooks + generic HTTP tool; n8n does the rest. |
-| Messaging channels | In scope at Milestone 11 — WhatsApp, Telegram, Discord, Messenger, Instagram. Closed list. Customer connects their own app credentials (§B13). |
+| Messaging channels | In scope at Milestone 11 — web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord. Nine with the phone. Closed list. Customer connects their own app credentials (§B13). |
 
 ---
 
@@ -177,7 +177,7 @@ These are settled. Do not reopen them without a concrete reason.
 
 A self-hosted service that sits between a phone line and an AI agent.
 
-A call arrives over SIP. OpenDial checks the caller against routing rules and either
+A call arrives over SIP. Tel-Agent checks the caller against routing rules and either
 passes it through to a human, blocks it, or hands it to an AI agent. The agent speaks
 with the caller in real time, can invoke tools (transfer, take a message, check a
 calendar, call any HTTP endpoint), and every call is recorded, transcribed, and
@@ -185,7 +185,7 @@ searchable.
 
 ## Scope boundary — memorize this
 
-| OpenDial owns | OpenDial does NOT own |
+| Tel-Agent owns | Tel-Agent does NOT own |
 |---|---|
 | Telephony / SIP | General workflow automation |
 | Voice pipeline (STT → LLM → TTS) | Integrations with 400 SaaS apps |
@@ -202,8 +202,8 @@ HTTP tool**. n8n and Home Assistant do that job better than we would.
 **Channel or integration — the distinction that keeps this table finite.**
 A **channel** is where the conversation happens: the person is on the other end of it,
 speaking or typing. An **integration** is a system the agent acts *on* during that
-conversation. OpenDial owns channels and reaches integrations through the HTTP tool.
-Six channels are in scope and the list is closed (§B13). Integrations are unbounded by
+conversation. Tel-Agent owns channels and reaches integrations through the HTTP tool.
+Nine channels are in scope and the list is closed (§B13). Integrations are unbounded by
 nature, which is why they are somebody else's product.
 
 ## Users
@@ -316,7 +316,7 @@ Two clearly separated paths, side by side. Do not bury either:
 Both end at the same place. Neither is presented as the advanced one.
 
 **Buying a number inside the app comes later** (§B3.1), and buying it *from us* is
-OpenDial Cloud only. Until then this step must be honest about what it needs: an
+Tel-Agent Cloud only. Until then this step must be honest about what it needs: an
 account with a provider, and in the EU a regulatory bundle that can take days to
 clear. Say so here rather than letting the user discover it after starting.
 
@@ -485,7 +485,7 @@ Our value is in routing, rules, archive, and tools — not in reinventing the au
 ## B2. Repository layout
 
 ```
-opendial/
+tel-agent/
 ├── agent/                  # Python — SIP, voice pipeline, agent loop, tools
 │   ├── providers/          # stt/, llm/, tts/ — one interface, many implementations
 │   ├── tools/              # built-in tool implementations
@@ -546,7 +546,7 @@ Four implementations, in this order:
 | **Bring your own number** | v1 | The user's own account at Twilio, Telnyx or similar. Their keys, their number, their bill. The only path in v1. |
 | **Bring your own SIP / PBX** | v1 | An extension or trunk on 3CX, Asterisk or FreePBX. The better story for a business that already runs a PBX, and the reason the on-premises media path matters. |
 | **Buy in-app** | later | Provisioning through the user's own provider credentials, from inside the UI. Convenience over the first row, not a different relationship. |
-| **Resold by OpenDial Cloud** | OpenDial Cloud only | Numbers held by Dpro GmbH and assigned to customers. **This implementation does not ship in the open edition.** |
+| **Resold by Tel-Agent Cloud** | Tel-Agent Cloud only | Numbers held by Dpro GmbH and assigned to customers. **This implementation does not ship in the open edition.** |
 
 ### Why reselling stays out of the open edition
 
@@ -653,7 +653,7 @@ live view. That is the entire reason for the split.
    the data was all there and the feature was not.
 3. **`numbers.owner`** — is the customer the holder of record for this number, or is
    the platform? This is the column that separates a self-hoster's own Twilio number
-   from a number resold by OpenDial Cloud, and it governs who may release or port it.
+   from a number resold by Tel-Agent Cloud, and it governs who may release or port it.
    Backfilling it once both kinds exist means guessing.
 4. **`calls.billable_seconds` and `calls.provider_cost_micros`** — usage metering from
    the first stored call. Two columns today; without them, any later per-minute pricing
@@ -669,7 +669,7 @@ live view. That is the entire reason for the split.
    which is correct: typed text has no recognition confidence, and that null is itself
    the signal that the line was typed rather than spoken.
 6. **`conversations` as the core table, with `calls` as a phone-only extension.**
-   The product answers on six channels (§B13), so a schema whose master table is named
+   The product answers on nine channels (§B13), so a schema whose master table is named
    `calls` and whose lines are keyed by `call_id` is wrong from the first migration.
    Renaming today costs nothing — there is no code and no stored row. Renaming after
    Milestone 4 means migrating every transcript, every query, every API path and every
@@ -757,14 +757,14 @@ dead one, because the user only finds out after losing ten calls.
 ## B9.1 Outbound abuse prevention
 
 **This applies to every installation, not just the hosted edition.** Anyone running
-OpenDial pays for the calls it makes.
+Tel-Agent pays for the calls it makes.
 
 **Toll fraud / IRSF** is the attack: someone reaches an outbound path and makes the
 system call premium-rate numbers they control. The operator pays for every minute, and
 those minutes are expensive by design. There is no single fix — the defences below are
 layered, and the outer ones must hold even when the inner ones have a bug.
 
-OpenDial exposes **three** paths that can start a real call, and all three need the
+Tel-Agent exposes **three** paths that can start a real call, and all three need the
 same treatment:
 
 | Path | Control |
@@ -787,7 +787,7 @@ An outbound call is permitted only if the destination is:
 and its country is on the allowed-countries list.
 ```
 
-This costs almost nothing in practice, because OpenDial's real outbound use is calling
+This costs almost nothing in practice, because Tel-Agent's real outbound use is calling
 someone back or dialling a known contact. It removes most of the attack surface.
 
 **Always refused, regardless of other rules:** `+882` and `+883` (international
@@ -926,7 +926,7 @@ cheaply.
   closed-source integration** · **support**. The free version is never crippled; it is
   the product.
 
-*Not legal advice — confirm the trademark position on "OpenDial" (EUIPO classes 9 and
+*Not legal advice — confirm the trademark position on "Tel-Agent" (EUIPO classes 9 and
 42) before committing to a logo. An older academic dialogue-systems framework shares
 the name.*
 
@@ -941,21 +941,38 @@ specification.*
 
 ## B13. Messaging channels — Milestone 11
 
-Five text channels alongside the phone: **WhatsApp · Telegram · Discord · Messenger ·
-Instagram**. The same agent, the same tools, the same transcript archive; a different
-transport.
+Eight channels alongside the phone: **web chat · SMS · email · WhatsApp · Telegram ·
+Messenger · Instagram · Discord**. The same agent, the same tools, the same transcript
+archive; a different transport.
 
-**The list is closed.** Six channels total including the phone. Adding a seventh is a
+**Three of them need no platform at all**, and they come first:
+
+| Channel | What it needs |
+|---|---|
+| **Web chat** | A script tag on the customer's own site. No account, no review, no approval by anyone. The easiest channel in the product. |
+| **SMS** | Nothing new — it arrives with the telephony account the phone number already uses. |
+| **Email** | An IMAP/SMTP mailbox the customer already owns. |
+
+The remaining five each require an application in the customer's own developer account
+on that platform, and several require review before they can message the public.
+That review is the slow part, not the code.
+
+**The line that keeps the list closed:** a channel is a route a **customer** uses to
+reach a business. It is not a system the business itself runs on — Slack, Teams and
+project trackers are integrations, reached through the HTTP tool. Without that line,
+"add one more connector" has no end, which is the failure §Rule 5 exists to prevent.
+
+**The list is closed.** Nine channels total including the phone. Adding a tenth is a
 decision to reopen this section, not a pull request.
 
 ### The customer connects their own app
 
 Every channel stores per-tenant credentials that the customer creates in **their own**
-developer account. OpenDial never holds a shared platform application.
+developer account. Tel-Agent never holds a shared platform application.
 
 This is the same reasoning as §B3.1 for phone numbers, and it is not only about
 philosophy: one shared app puts every installation behind one rate limit, and makes a
-single policy violation everybody's outage. It is also what keeps OpenDial installable
+single policy violation everybody's outage. It is also what keeps Tel-Agent installable
 by a stranger from GitHub with no account at Dpro.
 
 Token handling follows §B9 exactly — encrypted at rest, excluded from every API
@@ -1021,7 +1038,7 @@ and rebuilding the schema underneath a live product.
 - Distribution matters as much as code: a strong README, a 30-second video of a real
   call, and launches on Hacker News and r/selfhosted. An excellent project nobody finds
   is a dead project.
-- An **n8n community node** for OpenDial is one of the strongest distribution channels
+- An **n8n community node** for Tel-Agent is one of the strongest distribution channels
   available — a large community actively looking for new nodes.
 - Everything discussed but not in this document belongs in `IDEAS.md`. It will still be
   there when it's needed, and it won't distract now.
