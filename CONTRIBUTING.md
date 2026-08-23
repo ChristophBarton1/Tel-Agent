@@ -7,20 +7,22 @@ request — it will save you time.
 
 ## Read this first: the project is pre-alpha
 
-Tel-Agent is at **Milestone 0**: getting a single real phone call answered by an AI
-voice, with the message captured and the transcript printed. There is no installable
-release, no web UI, and no database yet.
+Tel-Agent is at **Milestone 0**: getting a single conversation answered end to end in
+a web chat, with the message captured and the transcript printed. There is no
+installable release, no dashboard, and no database yet. The phone comes last, at
+Milestone 11 — see [`docs/ROADMAP.md`](docs/ROADMAP.md) for why.
 
 **Feature pull requests will be pointed at [`IDEAS.md`](IDEAS.md) rather than merged.**
 
 That is not a judgement on your idea. The project follows one rule:
 
-> **Nothing gets built until the first call works.**
-> Not the UI. Not the rules engine. Not the second provider. Not MCP.
+> **Nothing gets built until the agent answers on one channel, end to end.**
+> Not the second channel. Not the rules engine. Not the UI beyond what it takes to
+> watch one conversation happen.
 
-The previous attempt at this stalled with plenty of plan and no answered call. The
-order is the only thing being changed this time, and holding that order is what makes
-the project finishable. Good ideas go into `IDEAS.md`, where they wait rather than
+The previous attempt at this stalled with plenty of plan and nothing a customer could
+reach. The order is the only thing being changed this time, and holding that order is
+what makes the project finishable. Good ideas go into `IDEAS.md`, where they wait rather than
 distract.
 
 **What is welcome right now:** bug reports, documentation fixes, corrections to the

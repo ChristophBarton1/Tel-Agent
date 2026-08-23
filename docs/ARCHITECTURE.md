@@ -90,11 +90,12 @@ Tel-Agent; these show how to reach it through webhooks and the generic HTTP tool
 ## Where Milestone 0 fits
 
 **Only `agent/` is used right now**, and not even as this structure — Milestone 0 is
-one script in a terminal, with no UI, no database, and no provider abstraction.
+one script and one page, with no dashboard, no database, and no provider abstraction
+beyond the model.
 
 The folders exist today so that files land in the right place from the first day
 instead of being moved later. They are not an instruction to start filling them.
 
-`api/`, `web/`, `locales/` and `examples/` stay empty until Milestones 2–5.
+`api/`, `web/`, `locales/` and `examples/` stay empty until Milestones 1–6.
 See `docs/SPEC.md` §B11 for the build order, and remember the rule that governs all
-of it: **nothing gets built until the first call works.**
+of it: **nothing gets built until the agent answers on one channel, end to end.**

@@ -13,17 +13,48 @@ Section A is for the designer. Section B is for the developer. Read both.
 
 # START HERE — Milestone 0
 
-**Goal:** one real phone call, answered by an AI voice, message captured, transcript printed.
+**Goal:** one conversation, answered end to end in a web chat. The reply streams token
+by token, it can be interrupted mid-sentence, the message is captured and the
+transcript printed.
 
-**Not in this milestone:** no web UI, no Docker, no database, no routing rules, no
-provider abstraction. One script in a terminal.
+**Not in this milestone:** no dashboard, no Docker, no database, no routing rules, no
+provider abstraction beyond the model. A page and a script.
 
 **Time box: two weeks.** If it isn't working by then, the constraint is time, not
 architecture — and knowing that early is worth more than any feature.
 
+**The phone is Milestone 11**, by decision D-017 of 2026-08-22. Everything below about
+numbers, trunks and SIP is still correct and still required — it simply happens last.
+It is kept here, in order, because it is the milestone that judges every interface
+built before it: an agent that cannot stream and cannot cancel will fail on a call no
+matter how well it reads in a chat window.
+
+## Milestone 0 in four steps
+
+| # | Step | Done when |
+|---|---|---|
+| 1 | A page that posts a message | A message typed in a browser reaches the agent process |
+| 2 | A model behind one interface | It replies, and swapping the model does not touch the page |
+| 3 | **Stream and cancel** | Tokens appear as produced; cancelling stops generation, not just the display |
+| 4 | Take a message | It asks for name and reason, prints a structured result |
+
+Step 3 is the one that matters beyond this milestone. It is what the phone will
+require, proven while it is cheap.
+
+**Measure from the first exchange:** time to first token, and where that time goes.
+The same discipline as the call measurements below, on an easier channel.
+
+---
+
+# Milestone 11 — the phone line
+
+Everything from here to the end of this section is the phone milestone. It was written
+first, when the phone was Milestone 0, and none of it has been weakened by moving:
+the numbers, the trunk, the codec and the measurements are unchanged.
+
 ## Step 1 — A number that reaches the agent (30 minutes)
 
-Milestone 0 needs one inbound number under your own control. Buy it from a SIP
+Milestone 11 needs one inbound number under your own control. Buy it from a SIP
 provider — Twilio, Telnyx, or a European equivalent — and point it at a LiveKit Cloud
 SIP trunk.
 
@@ -51,15 +82,15 @@ through your own code is far harder.
 mobile to forward to it after 15 seconds, call that mobile from a third phone, and
 check the caller ID again. If forwarding replaces the original caller's number with
 the subscriber's, every routing rule in §A6.5 matches the same number on every call.
-Better to learn this in week one than in Milestone 3.
+Better to learn this early than during the phone half of Milestone 4.
 
 ## Step 2 — Machine setup
 
 Any machine with outbound internet access. The agent connects **out** to LiveKit; it
 accepts no inbound connections, so there is no NAT traversal, no STUN, and no RTP port
 range to open. That removes the single biggest source of "call connects but there's no
-audio" for Milestone 0 — and defers it rather than solving it, because the
-self-hosted media path at Milestone 9 brings it back.
+audio" — and defers it rather than solving it, because the self-hosted media path
+brings it back.
 
 ```
 Python 3.11+
@@ -164,12 +195,12 @@ These are settled. Do not reopen them without a concrete reason.
 | Runs as | Locally installed web app on the LAN — not a desktop app, not SaaS-only |
 | First test bed | A number from a SIP provider, pointed at the agent |
 | Number acquisition | Users bring their own number in v1. Reselling numbers belongs to Tel-Agent Cloud and never enters the open edition — see §B3.1 |
-| SIP in Milestone 0 | LiveKit Cloud SIP. A Milestone 0 decision only; the self-hosted media path returns at Milestone 9 |
+| SIP at Milestone 11 | LiveKit Cloud SIP. A first-call decision only; the self-hosted media path returns after |
 | Theme | Dark and light, dark designed first |
 | Languages | Multi-language from day one: en / de / ar, RTL supported |
 | Analog phone lines | Out of scope. Users bridge with an ATA; we only ever speak SIP. |
 | Workflow automation | Out of scope. Webhooks + generic HTTP tool; n8n does the rest. |
-| Messaging channels | In scope at Milestone 11 — web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord. Nine with the phone. Closed list. Customer connects their own app credentials (§B13). |
+| Messaging channels | In scope at Milestone 3 — web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord. Nine with the phone. Closed list. Customer connects their own app credentials (§B13). |
 
 ---
 
@@ -431,7 +462,7 @@ Appears whenever a call is active, reachable from anywhere in the app.
 1. **General** — interface language, theme, timezone, agent display name
 2. **Providers** — STT / LLM / TTS: provider, key, "Test connection", est. cost/min
 3. **Numbers** — connected numbers, add another, per-number agent assignment, status
-4. **Channels** (§B13, Milestone 11) — one card per channel: connect, per-channel agent
+4. **Channels** (§B13, Milestone 3) — one card per channel: connect, per-channel agent
    assignment, status. Every card holds credentials the customer created in their own
    developer account, so each needs a **"Test connection"** that proves the link rather
    than claiming it, and each shows the saved token **masked to its last four
@@ -672,9 +703,9 @@ live view. That is the entire reason for the split.
    The product answers on nine channels (§B13), so a schema whose master table is named
    `calls` and whose lines are keyed by `call_id` is wrong from the first migration.
    Renaming today costs nothing — there is no code and no stored row. Renaming after
-   Milestone 4 means migrating every transcript, every query, every API path and every
+   Milestone 2 means migrating every transcript, every query, every API path and every
    screen. The `channels` table exists from the first migration too, holding exactly
-   one row of kind `phone` until Milestone 11 — the same discipline as `user_id` being
+   one row of kind `web` until Milestone 3 — the same discipline as `user_id` being
    permanently `1`, and for the same reason: the structure is what makes the later work
    a write instead of a redesign.
 
@@ -692,7 +723,7 @@ POST   /api/calls/outbound            # {to, prompt} — phone only, starts a re
 GET    /api/rules  POST  /api/rules
 GET    /api/agents PATCH /api/agents/{id}
 GET    /api/contacts
-GET    /api/channels   POST /api/channels     # connect a channel (§B13, Milestone 11)
+GET    /api/channels   POST /api/channels     # connect a channel (§B13, Milestone 3)
 GET    /api/settings PATCH /api/settings
 POST   /api/providers/test            # test connection
 WS     /ws/conversations/{id}         # live transcript / message stream
@@ -830,7 +861,7 @@ Two kinds of secret, two homes. Confusing them is why this section exists.
 | | `.env` | Database, encrypted |
 |---|---|---|
 | What | Installation secrets | Credentials the user enters |
-| Examples | `DATABASE_URL`, `REDIS_URL`, **`ENCRYPTION_KEY`**, LiveKit keys in Milestone 0 | STT / LLM / TTS API keys, SIP credentials per number, channel tokens (§B13) |
+| Examples | `DATABASE_URL`, `REDIS_URL`, **`ENCRYPTION_KEY`**, LiveKit keys at Milestone 11 | STT / LLM / TTS API keys, SIP credentials per number, channel tokens (§B13) |
 | Set by | Whoever runs the server, once | The user, from the UI, at any time |
 | How many | Exactly one set per installation | Many — several numbers, five channels, one key per provider |
 | Changing it | Restart | Takes effect immediately |
@@ -858,11 +889,11 @@ So: **the credential goes in the database, encrypted; the key that encrypts it g
 full to the client, shown in the UI only as a masked preview with the last four
 characters visible.
 
-### Milestone 0 is the exception, and only until Milestone 2
+### Milestone 0 is the exception, and only until Milestone 1
 
 There is no database in Milestone 0, so everything is in `.env` — including the
-provider keys. That is correct for one script in a terminal and wrong for anything
-with a UI. The move happens at Milestone 2, when persistence arrives; do not build a
+provider keys. That is correct for one script and one page, and wrong for anything
+with a dashboard. The move happens at Milestone 1, when persistence arrives; do not build a
 settings screen that writes to `.env`.
 
 **Unchanged in all cases:** never log a credential, never commit one, never return one
@@ -890,23 +921,25 @@ Do not start step N+1 before step N works.
 
 | # | Milestone | Done when |
 |---|---|---|
-| 0 | **First call** | A provider number rings, a Python script answers, speaks via TTS, takes a message, prints a transcript. **No UI, no Docker, no database.** |
-| 1 | Provider interfaces | One STT/LLM/TTS each behind clean interfaces |
-| 2 | Persistence | Postgres, conversations + messages stored, schema per §B5 |
-| 3 | Routing rules | Whitelist / blacklist / AI from SIP caller ID |
-| 4 | Web UI | Call detail → calls list → home → rules → agent → settings |
-| 5 | Webhooks + REST | Documented, signed |
-| 6 | Tools | The seven in B7 |
-| 7 | Live intervention | Whisper first, takeover after |
-| 8 | Health + alerts | B8 complete |
-| 9 | Docker packaging | One-command install |
-| 10 | MCP server | Thin layer over the REST API, with hard limits |
-| 11 | Messaging channels | The five in §B13, same agent and tools, different transport |
+| 0 | **Web chat** | A visitor types, the model replies token by token, the reply can be cancelled mid-sentence, a message is taken and a transcript printed. **No dashboard, no Docker, no database.** |
+| 1 | Persistence | Postgres, conversations + messages stored, schema per §B5 |
+| 2 | Web UI | Conversation detail → conversations list → home → rules → agent → settings |
+| 3 | Messaging channels | The eight in §B13, same agent and tools, different transport |
+| 4 | Routing rules | Pass / block / AI, from a channel identity rather than a phone number |
+| 5 | Tools | The seven in B7 |
+| 6 | Webhooks + REST | Documented, signed |
+| 7 | MCP server | Thin layer over the REST API, with hard limits |
+| 8 | Live intervention | Whisper first, takeover after |
+| 9 | Health + alerts | B8 complete |
+| 10 | Docker packaging | One-command install |
+| 11 | **Phone call** | A provider number rings, the agent answers, speaks via TTS, takes a message, and the transcript lands in the same archive as every chat. Brings the STT and TTS interfaces. |
 
-**Milestone 11 sits last on purpose.** The phone is the hard case — no interface, no
-way to show the caller what was understood, sub-second latency, and interruption
-mid-sentence. Text channels are forgiving and would let a slow architecture look
-healthy. Build for voice, then fit the rest to it.
+**Milestone 11 sits last, and it is the one that judges the ten before it.** The phone
+is the hard case — no interface, no way to show the caller what was understood,
+sub-second latency, and interruption mid-sentence. Text channels are forgiving and
+will let a slow architecture look healthy, which is exactly the trap this order walks
+into on purpose: the defence is that every interface built before it streams and
+cancels, and Milestone 0 proves both while they are cheap.
 
 **Milestone 0 is the only one that matters right now.** If it works within two weeks,
 everything above is worth building. If it doesn't, that is valuable information gained
@@ -939,7 +972,7 @@ a network service, and you must publish your modifications.
 *Commercial and ownership strategy is maintained privately and is not part of this
 specification.*
 
-## B13. Messaging channels — Milestone 11
+## B13. Messaging channels — Milestone 3
 
 Eight channels alongside the phone: **web chat · SMS · email · WhatsApp · Telegram ·
 Messenger · Instagram · Discord**. The same agent, the same tools, the same transcript

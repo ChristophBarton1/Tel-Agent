@@ -51,4 +51,5 @@ WS     /ws/conversations/{id}/whisper operator -> agent, mid-conversation
 
 ## Right now
 
-Empty. This arrives at Milestone 5, after persistence and routing exist.
+Empty. This arrives at Milestone 6, after persistence, the UI, the channels and the
+routing rules exist.

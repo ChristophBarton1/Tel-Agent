@@ -42,8 +42,9 @@ Latency impact:
 
 ## Before you open this
 
-Tel-Agent is at **Milestone 0** — one real phone call, answered, message taken,
-transcript printed. Nothing else is being built yet.
+Tel-Agent is at **Milestone 0** — a visitor types on a web page, the agent answers,
+the thread holds, and the reply streams and can be cancelled. Nothing else is being
+built yet. The phone is Milestone 11.
 
 **Feature PRs will be pointed at [IDEAS.md](../IDEAS.md) rather than merged.** That is
 not a judgement on the idea; it is how this project stays finishable. Bug fixes,

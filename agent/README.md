@@ -1,9 +1,11 @@
 # agent/ — the voice agent
 
-Owns everything that happens **while a phone call is in progress**: SIP, the audio
-path, turn-taking, the model loop, and tool execution.
+Owns everything that happens **while a conversation is in progress**: the model loop,
+turn-taking, tool execution, and - from Milestone 11 - SIP and the audio path.
 
-This is a soft real-time system, not a web service. See `docs/ARCHITECTURE.md`.
+It is built as a soft real-time system rather than a web service even while the only
+channel is a chat window, because the channel that decides the shape is the phone. See
+`docs/ARCHITECTURE.md`.
 
 ## The rule that governs this folder
 
@@ -37,6 +39,6 @@ the database and publishes events; it does not serve the UI.
 
 ## Right now
 
-Milestone 0 is **one script**, with no provider abstraction, no database, and no
-routing. This structure is where that code goes as it grows — not an instruction to
+Milestone 0 is **one script and one page**, with no database, no routing, and no
+provider abstraction beyond the model interface. This structure is where that code goes as it grows — not an instruction to
 build it all now.

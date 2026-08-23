@@ -55,12 +55,20 @@ models, and decide which callers ever reach the AI at all.
 
 **Pre-alpha. Not usable yet.** There is no installable release.
 
-The project is at Milestone 0: getting a single real phone call answered by an AI
-voice, with the message captured and the transcript printed. Everything else — the web
-UI, the database, Docker packaging, routing rules — comes after that works.
+The project is at Milestone 0: getting a single conversation answered end to end in a
+web chat — the reply streaming token by token, interruptible mid-sentence, with the
+message captured and the transcript printed. The messaging channels follow, and **the
+phone comes last**, at Milestone 11.
 
-The build order is deliberate. The previous attempt at this stalled with plenty of
-plan and no answered call.
+**The screens exist and have nothing behind them.** Twenty-eight of them are in this
+repository, designed and built; there is no backend serving them yet. Treat them as
+design, not as a product you can run.
+
+The build order is deliberate, and it was reversed once, on 2026-08-22. It originally
+required an answered phone call before anything else was built; the phone loop was
+proven elsewhere, which retired the risk that ordering existed to cover. What was not
+proven is that anyone can reach the agent at all. The superseded rule and the cost of
+reversing it are recorded in `internal/DECISIONS.md` as D-017.
 
 **Milestone 0 of 12 — in progress.** The full plan, and what each milestone means, is
 in [`docs/ROADMAP.md`](docs/ROADMAP.md).
@@ -138,9 +146,9 @@ cable.
 
 ## Contributing
 
-Contributions are welcome, but note the current state: until Milestone 0 works,
-pull requests adding features will be pointed at [`IDEAS.md`](IDEAS.md) rather than
-merged. That is not a judgement on the idea — it is how this project stays finishable.
+Contributions are welcome, but note the current state: until the agent answers on one
+channel end to end, pull requests adding features will be pointed at
+[`IDEAS.md`](IDEAS.md) rather than merged. That is not a judgement on the idea — it is how this project stays finishable.
 
 **All contributors must sign the [CLA](CLA.md)** before their first pull request is
 merged. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) before opening one. Everything in the
