@@ -20,25 +20,27 @@ User-facing *interface strings* are a separate matter: those live in
 
 ---
 
-## Rule 1 — Nothing gets built until the first call works
+## Rule 1 — Web chat is the first channel; the phone is the last
 
-Milestone 0 is the only milestone that exists right now:
+**Revised 2026-08-22 by D-017.** The original Rule 1 required an answered phone call
+before anything else was built. That order is reversed. The superseded text is kept in
+`internal/DECISIONS.md`, along with the cost of reversing it.
 
-> A phone number rings, a Python script answers, speaks via TTS,
-> hears the caller via STT, replies via an LLM, takes a message, and prints
-> a transcript. **No UI. No Docker. No database. No routing rules.**
+Milestone 0 is now:
 
-Not the UI. Not the rules engine. Not the second provider. Not MCP.
-Not the provider abstraction — that is Milestone 1.
+> A visitor types in a web chat, an LLM replies token by token, the reply can be
+> interrupted mid-sentence, and the conversation is stored and searchable.
 
-The previous phone integration stalled with plenty of plan and no answered
-call. The only thing being changed this time is the order.
+Then the messaging and social channels. **The phone is built last.**
 
-**Time box: two weeks.** If it is not working by then, the constraint is time,
-not architecture, and knowing that early is worth more than any feature.
+The phone remains the hard case — sub-second latency, barge-in, and no interface to
+show what was understood — so the conversation layer is written to its constraints from
+the first line even though web chat does not need them. See Rule 3; none of it is
+optional. Skipping it means rewriting the layer when the phone arrives, which is exactly
+what the original rule existed to prevent.
 
-If asked to build something outside Milestone 0, say so and put it in
-`IDEAS.md` instead.
+**What this does not license.** The scope table in Rule 5 still holds, and everything
+outside it still goes to `IDEAS.md`.
 
 ---
 
@@ -134,11 +136,15 @@ runs. Tel-Agent owns channels and reaches integrations through the HTTP tool. Wi
 this line, "add one more connector" has no end, which is the failure Rule 5 exists to
 prevent.
 
-**Channels do not change the build order.** The phone is the hard case — it is the
-only channel with no interface, no way to show what was understood, sub-second latency
-and a caller who interrupts mid-sentence. Text channels are forgiving, and code
-written to satisfy them is too slow for voice. The phone gets built first and the rest
-are fitted to it. Channels are Milestone 11; nothing about them starts earlier.
+**Channel build order — reversed 2026-08-22 by D-017.** Web chat first, then the
+messaging and social channels, then the phone. This paragraph previously said the
+opposite; the superseded text and the reasoning are in `internal/DECISIONS.md`.
+
+The phone is still the hard case — it is the only channel with no interface, no way to
+show what was understood, sub-second latency and a caller who interrupts mid-sentence.
+Text channels are forgiving, and code written to satisfy them is too slow for voice.
+Because the phone now comes last, the conversation layer must be written to the voice
+constraints from the start and the text channels fitted to *it*, not the reverse.
 Setup details per channel are in `internal/CHANNELS-REFERENCE.md`.
 
 ---
@@ -167,7 +173,7 @@ Settled. Do not reopen without a concrete reason.
 | Languages | en / de / ar from day one, RTL supported |
 | Analog lines | Out of scope — users bridge with an ATA; we only ever speak SIP |
 | Workflow automation | Out of scope — webhooks + generic HTTP tool; n8n does the rest |
-| Messaging channels | In scope, at Milestone 11. Nine including the phone: web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord. Closed list. The customer connects their own app credentials; Tel-Agent never holds a shared platform app |
+| Messaging channels | In scope. **Web chat is the first channel built (D-017).** Nine including the phone: web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord. Closed list. The customer connects their own app credentials; Tel-Agent never holds a shared platform app |
 
 ---
 
