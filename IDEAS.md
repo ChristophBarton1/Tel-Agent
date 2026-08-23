@@ -7,7 +7,7 @@ written down here **instead of into the code**. It is the mechanism that gets th
 project finished. The ideas will still be here when they are needed, and they will
 not distract now.
 
-**The one rule:** nothing gets built until the first call works.
+**The one rule:** nothing gets built until the agent answers on one channel, end to end.
 Not the UI. Not the rules engine. Not the second provider. Not MCP.
 
 ---
@@ -25,7 +25,7 @@ Items graduate out of this file only when an earlier milestone is finished.
 These are already described in `docs/SPEC.md` and scheduled, just not now.
 
 - **Provider abstraction** (§B3) — Milestone 1. One implementation each of STT / LLM /
-  TTS first; the second implementation comes only after the first call works.
+  TTS first; the second implementation comes only after one channel works end to end.
 - **Additional providers** (§B3) — Ollama, local Whisper, Piper, Cartesia. Many will
   arrive as community pull requests.
 - **PostgreSQL persistence** (§B5) — Milestone 2.

@@ -50,14 +50,16 @@ Build order inside Milestone 0. Do not start step N+1 before step N works:
 
 | # | Check | How you know it works |
 |---|---|---|
-| 1 | The number reaches us | The provider console shows the inbound call arriving at our SIP endpoint |
-| 2 | Answer the call | You call the number, it stops ringing, silence on the line |
-| 3 | Speak fixed text | It answers and says a hardcoded greeting |
-| 4 | Hear the caller | Your words appear as text in the terminal |
-| 5 | Full loop | You speak → LLM replies → you hear the reply |
+| 1 | The message reaches us | A message typed in a browser arrives at the agent process |
+| 2 | Answer it | It replies with a hardcoded greeting |
+| 3 | Understand it | The model's reply appears in the page, in the visitor's language |
+| 4 | Full loop | Visitor writes → LLM replies → visitor writes again, thread intact |
+| 5 | Stream and cancel | Tokens appear as produced, and stop instantly when cancelled |
 | 6 | Take a message | It asks for name and reason, prints a structured result |
 
-Steps 1–2 are plumbing. Step 5 is the product.
+Steps 1–2 are plumbing. Step 4 is the product, and step 5 is what protects the phone
+at Milestone 11: an agent that composes a whole answer before sending it can never be
+put on a call.
 
 **Before any code at all:** buy a number, point it at the SIP endpoint, call it from
 a mobile, and confirm in the provider console that the call arrives. If it does not,
@@ -168,7 +170,7 @@ Settled. Do not reopen without a concrete reason.
 | Runs as | Locally installed web app on the LAN — not a desktop app, not SaaS-only |
 | First test bed | A number from a SIP provider, pointed at the agent |
 | Number acquisition | Users bring their own number in v1. Reselling numbers belongs to Tel-Agent Cloud and never enters the open edition |
-| SIP in Milestone 0 | LiveKit Cloud SIP |
+| SIP at Milestone 11 | LiveKit Cloud SIP |
 | Theme | Dark and light, dark designed first |
 | Languages | en / de / ar from day one, RTL supported |
 | Analog lines | Out of scope — users bridge with an ATA; we only ever speak SIP |
@@ -177,27 +179,27 @@ Settled. Do not reopen without a concrete reason.
 
 ---
 
-## How SIP is handled in Milestone 0 — decided
+## How SIP is handled at Milestone 11 — decided
 
 **LiveKit Cloud SIP.** A number from a SIP provider points at a LiveKit Cloud SIP
 trunk; the agent connects to the room. Nothing runs locally except the one script.
 
 The objection to this option used to be that media leaves the LAN. That objection
-was written when Milestone 0 assumed an on-premises PBX on the same network. It no
-longer applies: with a provider number the audio crosses the internet either way,
-so the "same LAN, no NAT" property is not available to give up.
+was written when the phone milestone assumed an on-premises PBX on the same network.
+It no longer applies: with a provider number the audio crosses the internet either
+way, so the "same LAN, no NAT" property is not available to give up.
 
 The two rejected options, and why:
 
 - **Direct SIP** via `pjsua2` / `baresip` / `pyVoIP` — genuinely one script, but
-  turn-taking and barge-in get written by hand and thrown away at Milestone 1.
+  turn-taking and barge-in get written by hand and thrown away immediately after.
   Those two are the hardest part of the whole product; hand-rolling them to save
   a dependency is the wrong trade.
 - **LiveKit self-hosted** — correct eventually, and required for the on-premises
-  story. It costs two services running before the first call is answered, which
-  is exactly the delay Milestone 0 exists to prevent. It returns at Milestone 9.
+  story. It costs two services running before the first call is answered, which is
+  the delay this decision exists to avoid. It follows once calls are answered.
 
-**This is a Milestone 0 decision, not the product's architecture.** The shipped
+**This is a first-call decision, not the product's architecture.** The shipped
 product must still support a self-hosted media path — an installation whose audio
 is forced through a vendor's cloud contradicts the reason this project exists.
 Anything written now must sit behind the interfaces in §B3, so that swapping the
@@ -244,7 +246,7 @@ Competitive notes belong in , which is gitignored and never published.
   the database and the key. Database dumps, backups and read replicas are where
   credentials actually leak
 - Milestone 0 is the exception — no database exists yet, so everything is in `.env`.
-  This ends at Milestone 2. Never build a settings screen that writes to `.env`
+  This ends at Milestone 1. Never build a settings screen that writes to `.env`
 - Never log a key, never commit one, never return one in full to a client — the UI
   shows a masked preview with the last four characters
 - `.env.example` documents every variable with a safe placeholder
