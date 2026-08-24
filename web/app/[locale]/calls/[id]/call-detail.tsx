@@ -193,9 +193,12 @@ export function CallDetail({ locale, t }: { locale: Locale; t: CallDetailDiction
                   <h1 className="text-od-text m-0 text-[26px] font-semibold tracking-[-0.015em]">
                     Anna Gruber
                   </h1>
-                  <a href="#" className="text-od-violet text-[13px] hover:underline">
+                  <Link
+                    href={`/${locale}/contacts`}
+                    className="text-od-violet text-[13px] hover:underline"
+                  >
                     {t.contact_record}
-                  </a>
+                  </Link>
                 </div>
                 <div dir="ltr" className="mono ltr-data text-od-muted mt-[6px] text-[13.5px]">
                   +43 664 1234567

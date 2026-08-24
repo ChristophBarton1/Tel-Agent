@@ -109,6 +109,22 @@
     "login": {
       "title": "Sign in",
       "desc": "Local accounts on your own server. No cloud login."
+    },
+    "forgot": {
+      "title": "Reset password",
+      "desc": "Ask for a code, or the command when there is no mail server."
+    },
+    "code": {
+      "title": "Verification code",
+      "desc": "Six digits, expiry and resend. The same screen serves two-factor sign-in."
+    },
+    "new_password": {
+      "title": "New password",
+      "desc": "Strength measured in the browser, and what changing it signs out."
+    },
+    "key": {
+      "title": "Sign in with a key",
+      "desc": "A challenge signed on your own machine. No password, no key upload."
     }
   }
 }

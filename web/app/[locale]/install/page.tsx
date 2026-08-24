@@ -18,5 +18,5 @@ export default async function InstallPage({ params }: { params: Promise<{ locale
 
   const t = pickDictionary<InstallDictionary>(locale, { en, de, ar });
 
-  return <InstallWizard t={t} />;
+  return <InstallWizard locale={locale} t={t} />;
 }

@@ -1,6 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
+
+import { BrandMark, brandSlug } from "@/components/brands/brand-mark";
+import type { Locale } from "@/lib/locales";
 
 import {
   ChoiceCard,
@@ -47,7 +51,7 @@ function toMs(latency: string | undefined): number {
   return digits ? parseFloat(digits) * 1000 : 0;
 }
 
-export function InstallWizard({ t }: { t: InstallDictionary }) {
+export function InstallWizard({ locale, t }: { locale: Locale; t: InstallDictionary }) {
   const [step, setStep] = useState<Step>("language");
   const [mode, setMode] = useState<Mode>("quick");
   const [db, setDb] = useState<"sqlite" | "postgres">("sqlite");
@@ -311,6 +315,7 @@ export function InstallWizard({ t }: { t: InstallDictionary }) {
 
           {step === "done" ? (
             <DoneStep
+              locale={locale}
               t={t}
               custom={mode === "custom"}
               dbLabel={dbLabel}
@@ -557,6 +562,15 @@ function ChannelsStep({
                 >
                   {on ? "✓" : ""}
                 </span>
+                {/* A product carries its owner's mark; a channel that is ours carries a
+                    drawn glyph. Both sit in the same square, so the column stays even. */}
+                {brandSlug(channel.id) ? (
+                  <BrandMark id={channel.id} size={24} />
+                ) : (
+                  <span className="border-od-border-6 bg-od-raise-2 text-od-muted-4 inline-flex size-[24px] flex-none items-center justify-center rounded-[7px] border text-[12px] leading-none">
+                    {channel.glyph}
+                  </span>
+                )}
                 <span className="min-w-0">
                   <span className="flex flex-wrap items-center gap-2">
                     <span className="text-od-text font-semibold">
@@ -707,16 +721,20 @@ function ModelStep({
                     on ? "border-od-stroke bg-od-raise-10 text-od-text" : "border-od-border-7 text-od-muted-4"
                   }`}
                 >
-                  <span
-                    className="inline-flex size-[26px] flex-none items-center justify-center rounded-[7px] border text-[11.5px] leading-none font-bold"
-                    style={{
-                      borderColor: `oklch(0.58 0.16 ${entry.hue} / 0.36)`,
-                      background: `oklch(0.58 0.16 ${entry.hue} / 0.16)`,
-                      color: `oklch(0.55 0.17 ${entry.hue})`,
-                    }}
-                  >
-                    {entry.mark}
-                  </span>
+                  {brandSlug(entry.id) ? (
+                    <BrandMark id={entry.id} size={26} />
+                  ) : (
+                    <span
+                      className="inline-flex size-[26px] flex-none items-center justify-center rounded-[7px] border text-[11.5px] leading-none font-bold"
+                      style={{
+                        borderColor: `oklch(0.58 0.16 ${entry.hue} / 0.36)`,
+                        background: `oklch(0.58 0.16 ${entry.hue} / 0.16)`,
+                        color: `oklch(0.55 0.17 ${entry.hue})`,
+                      }}
+                    >
+                      {entry.mark}
+                    </span>
+                  )}
                   <span className="min-w-0 text-start">
                     {entry.name ? t[entry.name] : entry.nameText}
                   </span>
@@ -1452,6 +1470,7 @@ function GreetingStep({
 }
 
 function DoneStep({
+  locale,
   t,
   custom,
   dbLabel,
@@ -1460,6 +1479,7 @@ function DoneStep({
   tts,
   roundTrip,
 }: {
+  locale: Locale;
   t: InstallDictionary;
   custom: boolean;
   dbLabel: string;
@@ -1522,18 +1542,18 @@ function DoneStep({
       </Panel>
 
       <div className="mt-5 flex flex-wrap gap-[10px]">
-        <a
-          href="#"
+        <Link
+          href={`/${locale}/home`}
           className="border-od-stroke bg-od-raise-10 text-od-text-2 hover:bg-od-border-3 inline-flex items-center rounded-lg border p-[11px_18px] font-semibold whitespace-nowrap"
         >
           {t.go_dashboard}
-        </a>
-        <a
-          href="#"
+        </Link>
+        <Link
+          href={`/${locale}/numbers`}
           className="border-od-border-2 text-od-muted hover:text-od-text-2 hover:bg-[var(--od-raise-4)] inline-flex items-center rounded-lg border p-[11px_18px] whitespace-nowrap"
         >
           {t.add_number}
-        </a>
+        </Link>
       </div>
     </div>
   );

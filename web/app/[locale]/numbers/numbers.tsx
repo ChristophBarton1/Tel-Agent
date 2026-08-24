@@ -13,6 +13,7 @@ import {
   type Direction,
 } from "@/lib/numbers/data";
 import { interpolate } from "@/lib/i18n";
+import { EXTERNAL } from "@/lib/links";
 import type { Locale } from "@/lib/locales";
 
 import type { NumbersDictionary } from "./page";
@@ -414,7 +415,12 @@ export function Numbers({ locale, t }: { locale: Locale; t: NumbersDictionary })
                       {t.porting_body}
                     </div>
                   </div>
-                  <a href="#" className="text-od-violet text-[13px] hover:underline">
+                  <a
+                    href={EXTERNAL.docs}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-od-violet text-[13px] hover:underline"
+                  >
                     {t.porting_how}
                   </a>
                 </div>

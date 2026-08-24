@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 
+import { BrandMark, brandSlug } from "@/components/brands/brand-mark";
 import { Sidebar } from "@/components/shell/sidebar";
 import { StatePreview, type ScreenState } from "@/components/state-preview";
 import {
@@ -15,12 +16,46 @@ import {
   type Installed,
 } from "@/lib/apps/data";
 import { interpolate } from "@/lib/i18n";
+import { EXTERNAL } from "@/lib/links";
 import type { Locale } from "@/lib/locales";
 
 import type { AppsDictionary } from "./page";
 
-function Mark({ id, glyph, size = 40 }: { id: string; glyph: string; size?: number }) {
+/**
+ * Store categories where a vendored logo may stand in for a letter.
+ *
+ * `channels` and `notifications` are covered end to end - every company in them has a
+ * mark, so no logo sits beside a lettered square. `sip` is not: Twilio and Telekom
+ * CompanyFlex have marks and sipgate, toplink, ecotel and A1 Telekom Austria have none in
+ * any registry. It is listed anyway, deliberately, because those four would need marks
+ * drawn by hand and a recognisable Twilio is worth more than a uniform row of letters.
+ * Add a category here once you have looked at what the row will actually show.
+ */
+const BRANDED_CATEGORIES = ["channels", "notifications", "sip"];
+
+function Mark({
+  id,
+  glyph,
+  size = 40,
+  brand = true,
+}: {
+  id: string;
+  glyph: string;
+  size?: number;
+  /**
+   * Whether a vendored logo may replace the letter here.
+   *
+   * Off by default in the store, and turned on per category by `BRANDED_CATEGORIES`.
+   */
+  brand?: boolean;
+}) {
   const tint = tintFor(id);
+
+  // A letter is a stand-in for a name. Where the name is a company whose mark is
+  // vendored, the mark is what the reader recognises - and it carries the owner's
+  // colour rather than one hashed from the id.
+  if (brand && brandSlug(id)) return <BrandMark id={id} size={size} />;
+
   return (
     <span
       className="inline-flex flex-none items-center justify-center rounded-[10px] border font-semibold"
@@ -61,6 +96,7 @@ export function Apps({ locale, t }: { locale: Locale; t: AppsDictionary }) {
   const [state, setState] = useState<ScreenState>("default");
   const [tab, setTab] = useState<"installed" | "store">("installed");
   const [category, setCategory] = useState("all");
+  const [packageFile, setPackageFile] = useState<string | null>(null);
 
   /** An installed entry names itself in copy or keeps a product's own name. */
   const nameOf = (entry: Installed | App) =>
@@ -151,12 +187,24 @@ export function Apps({ locale, t }: { locale: Locale; t: AppsDictionary }) {
                 <h1 className="text-od-text m-0 text-[26px] font-semibold tracking-[-0.02em]">{t.title}</h1>
                 <p className="text-od-muted-4 mt-[6px] text-pretty">{t.intro}</p>
               </div>
-              <a
-                href="#"
-                className="border-od-border-2 text-od-muted rounded-md border p-[9px_15px] text-[13px] whitespace-nowrap"
-              >
-                {t.install_from_file}
-              </a>
+              {/* Installing a package is an action, not a destination, so it is a
+                  control rather than a link. Choosing the file needs no server; sending
+                  it does, which is why nothing happens past the file name. */}
+              <label className="border-od-border-2 text-od-muted hover:text-od-text-2 flex cursor-pointer items-center gap-[10px] rounded-md border p-[9px_15px] text-[13px] whitespace-nowrap">
+                <input
+                  type="file"
+                  accept=".tar.gz,.tgz,.zip"
+                  className="sr-only"
+                  onChange={(event) => setPackageFile(event.target.files?.[0]?.name ?? null)}
+                />
+                <span>{t.install_from_file}</span>
+                {/* A file name is machine data: verbatim, monospace, left to right. */}
+                {packageFile ? (
+                  <span dir="ltr" className="mono ltr-data text-od-faint-2 max-w-[24ch] truncate">
+                    {packageFile}
+                  </span>
+                ) : null}
+              </label>
             </div>
 
             <div className="border-od-border mt-[22px] flex flex-wrap gap-1 border-b">
@@ -408,7 +456,12 @@ export function Apps({ locale, t }: { locale: Locale; t: AppsDictionary }) {
                 <div className="text-od-text-5 font-medium">{t.write_title}</div>
                 <div className="text-od-muted-5 mt-[3px] text-[13px] text-pretty">{t.write_body}</div>
               </div>
-              <a href="#" className="text-od-violet text-[13px] hover:underline">
+              <a
+                href={EXTERNAL.docs}
+                target="_blank"
+                rel="noreferrer"
+                className="text-od-violet text-[13px] hover:underline"
+              >
                 {t.write_link}
               </a>
             </div>
@@ -446,7 +499,7 @@ function AppCard({ t, app }: { t: AppsDictionary; app: App }) {
       }}
     >
       <div className="flex flex-wrap items-start gap-3">
-        <Mark id={app.id} glyph={app.mark} />
+        <Mark id={app.id} glyph={app.mark} brand={BRANDED_CATEGORIES.includes(app.category)} />
         <div className="min-w-[140px] flex-[1_1_160px]">
           <div className="text-od-text text-[15px] font-semibold text-pretty">
             {app.name ? t[app.name] : app.nameText}
