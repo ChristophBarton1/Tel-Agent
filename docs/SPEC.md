@@ -200,7 +200,7 @@ These are settled. Do not reopen them without a concrete reason.
 | Languages | Multi-language from day one: en / de / ar, RTL supported |
 | Analog phone lines | Out of scope. Users bridge with an ATA; we only ever speak SIP. |
 | Workflow automation | Out of scope. Webhooks + generic HTTP tool; n8n does the rest. |
-| Messaging channels | In scope at Milestone 3 — web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord. Nine with the phone. Closed list. Customer connects their own app credentials (§B13). |
+| Messaging channels | In scope at Milestone 3 — web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord, Slack. Ten with the phone. Closed list. Customer connects their own app credentials (§B13). |
 
 ---
 
@@ -234,7 +234,7 @@ HTTP tool**. n8n and Home Assistant do that job better than we would.
 A **channel** is where the conversation happens: the person is on the other end of it,
 speaking or typing. An **integration** is a system the agent acts *on* during that
 conversation. Tel-Agent owns channels and reaches integrations through the HTTP tool.
-Nine channels are in scope and the list is closed (§B13). Integrations are unbounded by
+Ten channels are in scope and the list is closed (§B13). Integrations are unbounded by
 nature, which is why they are somebody else's product.
 
 ## Users
@@ -700,7 +700,7 @@ live view. That is the entire reason for the split.
    which is correct: typed text has no recognition confidence, and that null is itself
    the signal that the line was typed rather than spoken.
 6. **`conversations` as the core table, with `calls` as a phone-only extension.**
-   The product answers on nine channels (§B13), so a schema whose master table is named
+   The product answers on ten channels (§B13), so a schema whose master table is named
    `calls` and whose lines are keyed by `call_id` is wrong from the first migration.
    Renaming today costs nothing — there is no code and no stored row. Renaming after
    Milestone 2 means migrating every transcript, every query, every API path and every
@@ -924,7 +924,7 @@ Do not start step N+1 before step N works.
 | 0 | **Web chat** | A visitor types, the model replies token by token, the reply can be cancelled mid-sentence, a message is taken and a transcript printed. **No dashboard, no Docker, no database.** |
 | 1 | Persistence | Postgres, conversations + messages stored, schema per §B5 |
 | 2 | Web UI | Conversation detail → conversations list → home → rules → agent → settings |
-| 3 | Messaging channels | The eight in §B13, same agent and tools, different transport |
+| 3 | Messaging channels | The nine in §B13, same agent and tools, different transport |
 | 4 | Routing rules | Pass / block / AI, from a channel identity rather than a phone number |
 | 5 | Tools | The seven in B7 |
 | 6 | Webhooks + REST | Documented, signed |
@@ -974,8 +974,8 @@ specification.*
 
 ## B13. Messaging channels — Milestone 3
 
-Eight channels alongside the phone: **web chat · SMS · email · WhatsApp · Telegram ·
-Messenger · Instagram · Discord**. The same agent, the same tools, the same transcript
+Nine channels alongside the phone: **web chat · SMS · email · WhatsApp · Telegram ·
+Messenger · Instagram · Discord · Slack**. The same agent, the same tools, the same transcript
 archive; a different transport.
 
 **Three of them need no platform at all**, and they come first:
@@ -986,17 +986,20 @@ archive; a different transport.
 | **SMS** | Nothing new — it arrives with the telephony account the phone number already uses. |
 | **Email** | An IMAP/SMTP mailbox the customer already owns. |
 
-The remaining five each require an application in the customer's own developer account
+The remaining six each require an application in the customer's own developer account
 on that platform, and several require review before they can message the public.
 That review is the slow part, not the code.
 
 **The line that keeps the list closed:** a channel is a route a **customer** uses to
-reach a business. It is not a system the business itself runs on — Slack, Teams and
-project trackers are integrations, reached through the HTTP tool. Without that line,
-"add one more connector" has no end, which is the failure §Rule 5 exists to prevent.
+reach a business. It is not a system the business itself runs on — Teams and project
+trackers are integrations, reached through the HTTP tool. Slack sits on the channel
+side of that line for one case and not the other: an outside customer in a shared
+channel with a supplier is a route in, an internal workspace is not. Without that
+line, "add one more connector" has no end, which is the failure §Rule 5 exists to
+prevent.
 
-**The list is closed.** Nine channels total including the phone. Adding a tenth is a
-decision to reopen this section, not a pull request.
+**The list is closed.** Ten channels total including the phone. Adding an eleventh is
+a decision to reopen this section, not a pull request.
 
 ### The customer connects their own app
 

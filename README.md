@@ -6,8 +6,8 @@
 
 **Connect any phone line to any AI model. Self-hosted, bring your own keys.**
 
-<!-- Call, landline and mobile are three drawings of one channel. The prose below
-     counts the phone once; this row is about recognition, not arithmetic. -->
+<!-- Eleven marks, ten channels: call and landline are two drawings of the one phone
+     channel. This row is about recognition, not arithmetic. -->
 <p>
   <img src="docs/brand/channels/call.svg" alt="Call" title="Call" height="26">
   &nbsp;&nbsp;
@@ -85,11 +85,11 @@ transcribed, and searchable.
 It runs on your own hardware, on your own LAN, with your own API keys.
 
 The phone comes first and is the hardest case. After it works, the same agent answers
-on **web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram and Discord** —
-connected with your own credentials from each platform, never a shared application of
-ours. **Nine channels, and the list is closed.** A channel is a route a customer uses
-to reach you; a system you run your own business on is an integration, and those are
-reached through webhooks and the HTTP tool.
+on **web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord and
+Slack** — connected with your own credentials from each platform, never a shared
+application of ours. **Ten channels, and the list is closed.** A channel is a route a
+customer uses to reach you; a system you run your own business on is an integration,
+and those are reached through webhooks and the HTTP tool.
 
 ## What it is not
 

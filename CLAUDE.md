@@ -126,7 +126,7 @@ That file is the mechanism that gets this project finished.
 | Call routing rules | Analog hardware support |
 | Transcript archive + search | |
 | Tool execution | |
-| **Messaging channels** — web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord | |
+| **Messaging channels** — web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord, Slack | |
 
 Anything outside the left column is reached through webhooks and the generic
 HTTP tool. n8n and Home Assistant do that job better than we would.
@@ -175,7 +175,7 @@ Settled. Do not reopen without a concrete reason.
 | Languages | en / de / ar from day one, RTL supported |
 | Analog lines | Out of scope — users bridge with an ATA; we only ever speak SIP |
 | Workflow automation | Out of scope — webhooks + generic HTTP tool; n8n does the rest |
-| Messaging channels | In scope. **Web chat is the first channel built (D-017).** Nine including the phone: web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord. Closed list. The customer connects their own app credentials; Tel-Agent never holds a shared platform app |
+| Messaging channels | In scope. **Web chat is the first channel built (D-017).** Ten including the phone: web chat, SMS, email, WhatsApp, Telegram, Messenger, Instagram, Discord, Slack. Closed list. The customer connects their own app credentials; Tel-Agent never holds a shared platform app |
 
 ---
 

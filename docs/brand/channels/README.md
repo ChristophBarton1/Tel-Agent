@@ -53,14 +53,14 @@ Every drawn glyph is 24x24. `whatsapp.svg` is a 58x58 Illustrator export and
 `slack.png` a 96x96 raster - the only formats those two were available in. All fill
 their box, so at a shared `height` they render at matching weight.
 
-## One thing the prose still disagrees with
+## Where the prose stands
 
-**Slack.** `docs/SPEC.md` names Slack specifically as an *integration*, not a channel:
-"a channel is a route a customer uses to reach a business. It is not a system the
-business itself runs on - Slack, Teams and project trackers are integrations." The
-same sentence is in `docs/ROADMAP.md`. That sentence is what keeps the channel list
-finite, so putting Slack in this row contradicts the definition rather than just the
-count.
+**Slack - resolved.** `docs/SPEC.md` and `docs/ROADMAP.md` used to name Slack as the
+counter-example in the sentence that keeps the channel list finite. Slack is now the
+tenth channel, so that example named the thing it was excluding: both documents were
+rewritten to drop Slack from the integrations list and to state the case it passes on
+- an outside customer in a shared channel is a route in, an internal workspace is
+not.
 
 **Analog — resolved.** An earlier draft of `landline.svg` drew a rotary phone, which
 sat badly against "Not analog-capable ... Tel-Agent only speaks SIP". The supplied

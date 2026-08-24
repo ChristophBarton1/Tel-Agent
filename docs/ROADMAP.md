@@ -122,14 +122,16 @@ not a layout.
 
 ## 3 — Messaging channels
 
-WhatsApp, Telegram, Messenger, Instagram, Discord — plus SMS and email. The same agent,
+WhatsApp, Telegram, Messenger, Instagram, Discord, Slack — plus SMS and email. The same agent,
 the same tools, the same searchable archive; a different transport.
-**Nine channels including the phone, and the list is closed.**
+**Ten channels including the phone, and the list is closed.**
 
 The line that keeps it closed: a channel is any route a **customer** uses to reach a
-business. It is not any system the business itself runs on — Slack, Teams and project
-trackers are integrations, reached through the HTTP tool. Without that line, "add one
-more connector" has no end.
+business. It is not any system the business itself runs on — Teams and project
+trackers are integrations, reached through the HTTP tool. Slack is on the list for the
+shared-channel case only: an outside customer in a channel with a supplier is a route
+in, an internal workspace is not. Without that line, "add one more connector" has no
+end.
 
 WhatsApp and Telegram come first: that is where the customers of the businesses this is
 built for already are, and Telegram needs no platform review at all. Email follows. SMS
@@ -250,7 +252,7 @@ forced.
 | | Why |
 |---|---|
 | General workflow automation | Webhooks and a generic HTTP tool reach n8n and Home Assistant, which do it better |
-| Integrations with SaaS applications | A **channel** is where the conversation happens; an **integration** is a system the agent acts on. We own the first and reach the second through the HTTP tool. Channels are a closed list of nine; integrations are unbounded, which is why they are somebody else's product |
+| Integrations with SaaS applications | A **channel** is where the conversation happens; an **integration** is a system the agent acts on. We own the first and reach the second through the HTTP tool. Channels are a closed list of ten; integrations are unbounded, which is why they are somebody else's product |
 | Being a CRM | Not what this is |
 | Being a PBX replacement | It connects to your PBX as an extension |
 | Analog hardware support | We only ever speak SIP. A genuinely analog line is bridged with an ATA — see the requirements in the README |
