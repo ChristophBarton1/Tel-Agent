@@ -53,7 +53,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/brand/awards/product-of-the-day-dark.svg">
   <source media="(prefers-color-scheme: light)" srcset="docs/brand/awards/product-of-the-day-light.svg">
-  <img src="docs/brand/awards/product-of-the-day-light.svg" alt="Product of the day - 1st, rated on Google" height="110">
+  <img src="docs/brand/awards/product-of-the-day-light.svg" alt="Product of the day - 1st" height="74">
 </picture>
 </p>
 
