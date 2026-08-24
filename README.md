@@ -31,18 +31,24 @@
 
 <!-- Eight logos, one file per theme. Three of them (OpenAI, Ollama, Manus) are
      single-colour marks, so the strip is built twice rather than recoloured live. -->
+<p>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/brand/models/models-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/brand/models/models-light.svg">
   <img src="docs/brand/models/models-light.svg" alt="Works with OpenAI, Claude, Gemini, Mistral, Ollama, Perplexity, Copilot and Manus" height="28">
 </picture>
+</p>
 
 <!-- Two files, one seal. The wreath is single-colour artwork on a transparent
      background, so it needs dark ink on GitHub's light theme and white ink on the
      dark one; <picture> is what lets a README ship both. -->
+<p>
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/brand/awards/product-of-the-day-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="docs/brand/awards/product-of-the-day-light.svg">
   <img src="docs/brand/awards/product-of-the-day-light.svg" alt="Product of the day - 1st, rated on Google" height="110">
 </picture>
+</p>
 
 <p>
   <img src="docs/brand/compliance/gdpr-dsgvo.png" alt="DSGVO & GDPR compliant" height="34">
