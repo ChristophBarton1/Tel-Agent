@@ -1,8 +1,56 @@
 <div align="center">
 
-# Tel-Agent
+# AI phone assistant
 
 **Connect any phone line to any AI model. Self-hosted, bring your own keys.**
+
+<!-- The channel row. Note the prose below still says nine; Slack makes ten. -->
+<p>
+  <img src="docs/brand/channels/phone.svg" alt="Phone" title="Phone" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/web-chat.svg" alt="Web chat" title="Web chat" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/sms.svg" alt="SMS" title="SMS" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/email.svg" alt="Email" title="Email" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/whatsapp.svg" alt="WhatsApp" title="WhatsApp" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/telegram.svg" alt="Telegram" title="Telegram" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/messenger.svg" alt="Messenger" title="Messenger" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/instagram.svg" alt="Instagram" title="Instagram" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/discord.svg" alt="Discord" title="Discord" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/slack.png" alt="Slack" title="Slack" height="26">
+</p>
+
+<p>Connect them over MCP — and get full control.</p>
+
+<!-- Eight logos, one file per theme. Three of them (OpenAI, Ollama, Manus) are
+     single-colour marks, so the strip is built twice rather than recoloured live. -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/models/models-dark.svg">
+  <img src="docs/brand/models/models-light.svg" alt="Works with OpenAI, Claude, Gemini, Mistral, Ollama, Perplexity, Copilot and Manus" height="28">
+</picture>
+
+<!-- Two files, one seal. The wreath is single-colour artwork on a transparent
+     background, so it needs dark ink on GitHub's light theme and white ink on the
+     dark one; <picture> is what lets a README ship both. -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/brand/awards/product-of-the-day-dark.svg">
+  <img src="docs/brand/awards/product-of-the-day-light.svg" alt="Product of the day - 1st, rated on Google" height="110">
+</picture>
+
+<p>
+  <img src="docs/brand/compliance/gdpr-dsgvo.png" alt="DSGVO & GDPR compliant" height="34">
+  <img src="docs/brand/compliance/eu-ai-act.png" alt="EU AI Act compliant" height="34">
+  <img src="docs/brand/compliance/esign.png" alt="ESIGN compliant" height="34">
+  <img src="docs/brand/compliance/eidas.png" alt="eIDAS" height="34">
+  <img src="docs/brand/compliance/aes-256.png" alt="AES 256 verified" height="34">
+</p>
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Status: pre-alpha](https://img.shields.io/badge/status-pre--alpha-orange.svg)](#project-status)
