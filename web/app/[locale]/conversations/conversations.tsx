@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { Sidebar } from "@/components/shell/sidebar";
+import { ChannelMark } from "@/components/shell/channel-mark";
 import { StatePreview, type ScreenState } from "@/components/state-preview";
 import { interpolate } from "@/lib/i18n";
 import type { Locale } from "@/lib/locales";
@@ -256,20 +257,29 @@ export function Conversations({
                 {t.title}
               </h1>
               <div className="flex flex-wrap gap-2">
-                {FILTERS.map((entry) => (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    onClick={() => setFilter(entry.id)}
-                    className={`cursor-pointer rounded-lg border p-[8px_13px] text-[13.5px] whitespace-nowrap ${
-                      filter === entry.id
-                        ? "border-od-stroke bg-od-line-2 text-od-text"
-                        : "border-od-border-7 bg-od-panel-deep-3 text-od-muted-4"
-                    }`}
-                  >
-                    {entry.labelKey ? t[entry.labelKey] : entry.label}
-                  </button>
-                ))}
+                {FILTERS.map((entry) => {
+                  const label = entry.labelKey ? t[entry.labelKey] : entry.label!;
+                  // Every channel is a mark; "all" is not a channel and stays a word.
+                  const bare = entry.id !== "all";
+                  return (
+                    <button
+                      key={entry.id}
+                      type="button"
+                      onClick={() => setFilter(entry.id)}
+                      title={bare ? label : undefined}
+                      aria-label={bare ? label : undefined}
+                      className={`inline-flex cursor-pointer items-center justify-center rounded-lg border text-[13.5px] whitespace-nowrap ${
+                        bare ? "p-[8px_11px]" : "p-[8px_13px]"
+                      } ${
+                        filter === entry.id
+                          ? "border-od-stroke bg-od-line-2 text-od-text"
+                          : "border-od-border-7 bg-od-panel-deep-3 text-od-muted-4"
+                      }`}
+                    >
+                      {bare ? <ChannelMark id={entry.id} size={15} /> : label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -302,6 +312,7 @@ export function Conversations({
 
                       {group.threads.map((thread) => {
                         const channel = CHANNELS[thread.channel];
+                        const channelName = channel.nameKey ? t[channel.nameKey] : channel.name!;
                         return (
                           <div
                             key={thread.id}
@@ -312,15 +323,22 @@ export function Conversations({
                             }}
                           >
                             <div className="flex flex-wrap items-center gap-2">
+                              {/* In the list the mark stands alone. The name is repeated on
+                                  every row and says nothing the logo does not; dropping it
+                                  gives the sentence underneath the width instead. It stays
+                                  on the label, so a screen reader and a hover still say
+                                  which channel this is. */}
                               <span
-                                className="rounded border p-[1px_7px] text-[11px] font-semibold whitespace-nowrap"
+                                title={channelName}
+                                aria-label={channelName}
+                                className="inline-flex items-center justify-center rounded border p-[3px]"
                                 style={{
                                   borderColor: channel.border,
                                   background: channel.background,
                                   color: channel.color,
                                 }}
                               >
-                                {channel.nameKey ? t[channel.nameKey] : channel.name}
+                                <ChannelMark id={thread.channel} size={13} />
                               </span>
                               <span className="text-od-text font-medium text-pretty">
                                 {thread.nameKey ? t[thread.nameKey] : thread.name}
@@ -376,8 +394,12 @@ export function Conversations({
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-[9px]">
                         <span className="text-od-text text-[16px] font-semibold">Anna Gruber</span>
-                        <span className="border-od-green-border rounded-[5px] border bg-[rgba(63,185,132,.11)] p-[2px_9px] text-[11.5px] font-semibold text-[color:var(--od-green-text)]">
-                          WhatsApp
+                        <span
+                          title="WhatsApp"
+                          aria-label="WhatsApp"
+                          className="border-od-green-border inline-flex items-center justify-center rounded-[5px] border bg-[rgba(63,185,132,.11)] p-[4px] text-[color:var(--od-green-text)]"
+                        >
+                          <ChannelMark id="whatsapp" size={14} />
                         </span>
                         <Tag label={t.tag_reschedule} />
                       </div>

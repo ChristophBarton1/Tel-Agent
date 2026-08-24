@@ -70,15 +70,21 @@ export type Channel = {
   /** Download weight of the channel's container, in megabytes. */
   mb: number;
   core?: boolean;
+  /**
+   * A drawn glyph, for the channels that are not a company - a phone line, a web chat,
+   * SMS, email. The rest are looked up in the vendored marks by `id`, so they carry the
+   * owner's logo and need nothing here.
+   */
+  glyph?: string;
 };
 
 export const CHANNELS: Channel[] = [
-  { id: "phone", name: "ch_phone_name", note: "ch_phone_note", mb: 210, core: true },
-  { id: "web", name: "ch_web_name", note: "ch_web_note", mb: 220 },
+  { id: "phone", glyph: "☎", name: "ch_phone_name", note: "ch_phone_note", mb: 210, core: true },
+  { id: "web", glyph: "◍", name: "ch_web_name", note: "ch_web_note", mb: 220 },
   { id: "whatsapp", nameText: "WhatsApp", note: "ch_whatsapp_note", mb: 1800 },
   { id: "telegram", nameText: "Telegram", note: "ch_telegram_note", mb: 2600 },
-  { id: "sms", name: "ch_sms_name", note: "ch_sms_note", mb: 1800 },
-  { id: "email", name: "ch_email_name", note: "ch_email_note", mb: 900 },
+  { id: "sms", glyph: "▤", name: "ch_sms_name", note: "ch_sms_note", mb: 1800 },
+  { id: "email", glyph: "✉", name: "ch_email_name", note: "ch_email_note", mb: 900 },
   { id: "messenger", nameText: "Facebook Messenger", note: "ch_messenger_note", mb: 2100 },
   { id: "instagram", name: "ch_instagram_name", note: "ch_instagram_note", mb: 3200 },
   { id: "signal", nameText: "Signal", note: "ch_signal_note", mb: 4100 },

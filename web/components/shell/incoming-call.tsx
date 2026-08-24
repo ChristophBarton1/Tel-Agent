@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import ar from "../../../locales/ar/incoming-call.json";
@@ -233,12 +234,12 @@ export function IncomingCall({
 
       <div className="border-od-border bg-od-panel-deep-2 flex gap-[7px] border-t p-[12px_15px]">
         {canAnswer ? (
-          <a
-            href="#"
+          <Link
+            href={`/${locale}/live`}
             className="inline-flex flex-[1_1_0] items-center justify-center rounded-lg border border-[color:var(--od-green-border)] bg-[var(--od-panel-green)] p-[9px_10px] text-[13px] font-semibold text-[color:var(--od-green-text)] hover:bg-[var(--od-panel-green-3)] hover:no-underline"
           >
             {t.answer}
-          </a>
+          </Link>
         ) : null}
         <button
           type="button"

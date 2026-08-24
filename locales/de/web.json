@@ -74,7 +74,7 @@
   },
   "auth": {
     "title": "Anmelden",
-    "subtitle": "Konten existieren nur auf diesem Server. Es gibt keine Cloud-Anmeldung und kein Zurücksetzen des Passworts per E-Mail.",
+    "subtitle": "Konten existieren nur auf diesem Server. Es gibt keine Cloud-Anmeldung, und ein Zurücksetzen verlässt Ihren eigenen Mailserver nie.",
     "username": "Benutzername",
     "password": "Passwort",
     "forgot": "Vergessen?",

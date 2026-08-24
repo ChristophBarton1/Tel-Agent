@@ -109,6 +109,22 @@
     "login": {
       "title": "Anmelden",
       "desc": "Lokale Konten auf Ihrem eigenen Server. Keine Cloud-Anmeldung."
+    },
+    "forgot": {
+      "title": "Passwort zurücksetzen",
+      "desc": "Code anfordern - oder den Befehl, wenn kein Mailserver da ist."
+    },
+    "code": {
+      "title": "Bestätigungscode",
+      "desc": "Sechs Ziffern, Ablauf und erneutes Senden. Dieselbe Seite dient der Zwei-Faktor-Anmeldung."
+    },
+    "new_password": {
+      "title": "Neues Passwort",
+      "desc": "Stärke im Browser gemessen - und was die Änderung abmeldet."
+    },
+    "key": {
+      "title": "Mit Schlüssel anmelden",
+      "desc": "Eine Aufgabe, auf dem eigenen Rechner signiert. Kein Passwort, kein Schlüssel-Upload."
     }
   }
 }

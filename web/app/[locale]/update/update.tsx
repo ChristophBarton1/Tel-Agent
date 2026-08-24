@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Sidebar } from "@/components/shell/sidebar";
 import { StatePreview, type ScreenState } from "@/components/state-preview";
 import { interpolate } from "@/lib/i18n";
+import { EXTERNAL } from "@/lib/links";
 import type { Locale } from "@/lib/locales";
 
 import type { UpdateDictionary } from "./page";
@@ -353,7 +354,12 @@ export function Update({ locale, t }: { locale: Locale; t: UpdateDictionary }) {
                 );
               })}
               <div className="border-t border-[color:var(--od-raise-6)] p-[13px_18px]">
-                <a href="#" className="text-[13px]">
+                <a
+                  href={EXTERNAL.releases}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[13px]"
+                >
                   {t.release_notes}
                 </a>
               </div>

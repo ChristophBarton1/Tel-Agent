@@ -8,8 +8,8 @@ import type { Dictionary } from "@/lib/i18n";
 import { interpolate } from "@/lib/i18n";
 import type { Locale } from "@/lib/locales";
 
-/** Placeholders until `api/` exists. The installation reports its own host and build. */
-const INSTALLATION = { host: "telagent.wagner-partner.local", port: 8443, version: "v1.4.2" };
+import { INSTALLATION } from "./installation";
+
 const UNLOCKS_AT = "11:19";
 
 /**
@@ -112,7 +112,14 @@ export function SignIn({ locale, dictionary }: { locale: Locale; dictionary: Dic
             </div>
           ) : null}
 
-          {showForm ? <SignInCard dictionary={dictionary} blocked={blocked} offline={offline} /> : null}
+          {showForm ? (
+            <SignInCard
+              locale={locale}
+              dictionary={dictionary}
+              blocked={blocked}
+              offline={offline}
+            />
+          ) : null}
 
           {state === "loading" ? <LoadingCard /> : null}
 
@@ -129,10 +136,12 @@ export function SignIn({ locale, dictionary }: { locale: Locale; dictionary: Dic
 }
 
 function SignInCard({
+  locale,
   dictionary,
   blocked,
   offline,
 }: {
+  locale: Locale;
   dictionary: Dictionary;
   blocked: boolean;
   offline: boolean;
@@ -164,9 +173,12 @@ function SignInCard({
             <label htmlFor="password" className="text-od-text-3 font-medium">
               {t.password}
             </label>
-            <a href="#" className="text-od-muted-5 text-[12.5px] hover:underline">
+            <Link
+              href={`/${locale}/login/forgot`}
+              className="text-od-muted-5 text-[12.5px] hover:underline"
+            >
               {t.forgot}
-            </a>
+            </Link>
           </div>
           <input
             id="password"
@@ -196,9 +208,12 @@ function SignInCard({
 
       <div className="border-od-border mt-[18px] flex flex-wrap items-center justify-between gap-x-4 gap-y-[10px] border-t pt-4">
         <span className="text-od-muted-5 text-[13px]">{t.key_prompt}</span>
-        <a href="#" className="text-od-violet hover:text-od-violet-2 text-[13px] hover:underline">
+        <Link
+          href={`/${locale}/login/key`}
+          className="text-od-violet hover:text-od-violet-2 text-[13px] hover:underline"
+        >
           {t.key_link}
-        </a>
+        </Link>
       </div>
     </div>
   );

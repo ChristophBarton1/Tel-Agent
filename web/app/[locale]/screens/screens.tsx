@@ -39,6 +39,10 @@ const SCREENS: { key: keyof ScreensDictionary["items"]; index: string; href: str
   { key: "install", index: "14d", href: "/install" },
   { key: "workspace", index: "14e", href: "/workspaces/new" },
   { key: "login", index: "15", href: "/login" },
+  { key: "forgot", index: "15a", href: "/login/forgot" },
+  { key: "code", index: "15b", href: "/login/code" },
+  { key: "new_password", index: "15c", href: "/login/new-password" },
+  { key: "key", index: "15d", href: "/login/key" },
 ];
 
 export function Screens({ locale, t }: { locale: Locale; t: ScreensDictionary }) {

@@ -74,7 +74,7 @@
   },
   "auth": {
     "title": "Sign in",
-    "subtitle": "Accounts live on this server only. There is no cloud login and no password reset by email.",
+    "subtitle": "Accounts live on this server only. There is no cloud login, and a reset never leaves your own mail server.",
     "username": "Username",
     "password": "Password",
     "forgot": "Forgot it?",

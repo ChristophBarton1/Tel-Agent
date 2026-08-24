@@ -6,7 +6,7 @@
   "day_tuesday": "Tuesday, 18 August",
   "conversations_one": "1 conversation",
   "conversations_many": "{count} conversations",
-  "thread_visitor": "Website visitor",
+  "thread_visitor": "Visitor",
   "state_handled": "Handled by Lena",
   "state_waiting": "Waiting for a human",
   "state_opted_out": "Opted out of reminders",

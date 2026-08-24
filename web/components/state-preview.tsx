@@ -22,7 +22,8 @@ export type ScreenState =
   | "current"
   | "typed"
   | "creating"
-  | "taken";
+  | "taken"
+  | "done";
 
 const DEFAULT_STATES: ScreenState[] = ["default", "empty", "loading", "error", "offline"];
 
