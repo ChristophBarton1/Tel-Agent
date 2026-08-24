@@ -1,12 +1,19 @@
 <div align="center">
 
+<img src="logo.png" alt="Tel-Agent" height="130">
+
 # AI phone assistant
 
 **Connect any phone line to any AI model. Self-hosted, bring your own keys.**
 
-<!-- The channel row. Note the prose below still says nine; Slack makes ten. -->
+<!-- Call, landline and mobile are three drawings of one channel. The prose below
+     counts the phone once; this row is about recognition, not arithmetic. -->
 <p>
-  <img src="docs/brand/channels/phone.svg" alt="Phone" title="Phone" height="26">
+  <img src="docs/brand/channels/call.svg" alt="Call" title="Call" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/landline.svg" alt="Landline" title="Landline" height="26">
+  &nbsp;&nbsp;
+  <img src="docs/brand/channels/mobile.svg" alt="Mobile" title="Mobile" height="26">
   &nbsp;&nbsp;
   <img src="docs/brand/channels/web-chat.svg" alt="Web chat" title="Web chat" height="26">
   &nbsp;&nbsp;
