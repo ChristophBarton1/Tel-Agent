@@ -2,7 +2,7 @@
 
 The icons in the README's opening row, one file each.
 
-> **Twelve icons, not twelve channels.** `call`, `landline` and `mobile` are three
+> **Eleven icons, not eleven channels.** `call` and `landline` are two
 > drawings of the *one* phone channel — the row is about recognition, not arithmetic.
 > Slack is a separate question: see the note at the bottom.
 
@@ -10,7 +10,6 @@ The icons in the README's opening row, one file each.
 |---|---|---|---|
 | `call.svg` | A call in progress | Drawn here (Material "call") | `#7C3AED` |
 | `landline.svg` | Desk phone, handset across the top over a keypad | Supplied | `#0284C7` |
-| `mobile.svg` | Smartphone | Drawn here | `#DB2777` |
 | `web-chat.svg` | Globe | Drawn here (Feather "globe") | `#0D9488` |
 | `sms.svg` | Speech bubble | Drawn here (Material "sms") | `#D97706` |
 | `email.svg` | Envelope | Drawn here (Material "email") | `#EF4444` |

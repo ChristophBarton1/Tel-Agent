@@ -13,8 +13,6 @@
   &nbsp;&nbsp;
   <img src="docs/brand/channels/landline.svg" alt="Landline" title="Landline" height="26">
   &nbsp;&nbsp;
-  <img src="docs/brand/channels/mobile.svg" alt="Mobile" title="Mobile" height="26">
-  &nbsp;&nbsp;
   <img src="docs/brand/channels/web-chat.svg" alt="Web chat" title="Web chat" height="26">
   &nbsp;&nbsp;
   <img src="docs/brand/channels/sms.svg" alt="SMS" title="SMS" height="26">
