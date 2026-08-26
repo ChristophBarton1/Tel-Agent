@@ -58,6 +58,14 @@ else can actually review.
 
 ## Do exactly this
 
+**First, say which file you are taking.** Every language has an open issue —
+[search the `i18n` label](https://github.com/Dpro-at/Tel-Agent/issues?q=is%3Aissue+is%3Aopen+label%3Ai18n)
+for yours, and use
+[#29](https://github.com/Dpro-at/Tel-Agent/issues/29) if it is not there yet. Leave a
+comment naming the file. Nothing gets assigned and you do not wait for an answer —
+several people work on one language at the same time, each on a different file, and the
+comment is what stops two of you translating the same one.
+
 ```bash
 # 1. Fork github.com/Dpro-at/Tel-Agent on GitHub, then clone YOUR fork
 git clone https://github.com/<your-username>/Tel-Agent.git
@@ -85,16 +93,26 @@ git commit -m "feat(locales): translate code.json into French"
 git push origin feat/fr-code-json
 ```
 
-Then open the pull request from your fork. Put this line in the description — **the
-first pull request cannot be merged without it**:
+Then open the pull request from your fork. Two lines have to be in the description:
 
 ```
+Refs #<the number of your language's issue>
 I have read the CLA document and I hereby sign the CLA.
 ```
 
-Say which language, which file, and that you checked the placeholders. That is the
-whole description. See [`CLA.md`](../CLA.md) for what you are signing: you keep full
-ownership and copyright of your work.
+The CLA line is not optional — **the first pull request cannot be merged without it**,
+and it has to be that exact sentence. See [`CLA.md`](../CLA.md) for what you are
+signing: you keep full ownership and copyright of your work.
+
+`Refs`, not `Closes`. Your language's issue covers all 33 files and stays open until
+the language is finished, so a pull request must not close it.
+
+Beyond those two lines, say which language, which file, and that you checked the
+placeholders. That is the whole description.
+
+**Opening the pull request is the notification.** GitHub tells the maintainer the
+moment you open it — there is nothing else to send, no message, and no need to ask
+whether it arrived.
 
 ---
 
