@@ -202,6 +202,10 @@ cable.
 
 ## Contributing
 
+**New here? [`docs/ONBOARDING.md`](docs/ONBOARDING.md) is the hour-long path from a fork
+to a merged pull request** — a translation, one file, no setup and no API keys. Thirty
+languages are sitting at 0% and any language you actually speak is welcome.
+
 Contributions are welcome, but note the current state: until the agent answers on one
 channel end to end, pull requests adding features will be pointed at
 [`IDEAS.md`](IDEAS.md) rather than merged. That is not a judgement on the idea — it is how this project stays finishable.

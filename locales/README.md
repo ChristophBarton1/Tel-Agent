@@ -9,10 +9,15 @@ touching every component that was built assuming English string lengths.
 written there first and every other locale is measured against it.
 
 ```bash
-node scripts/check-locales.mjs              # where every language stands
-node scripts/check-locales.mjs --locale fr  # one language, and what is left in it
-node scripts/check-locales.mjs --list       # every missing key
+node scripts/check-locales.mjs                     # where every language stands
+node scripts/check-locales.mjs --locale fr         # one language, file by file
+node scripts/check-locales.mjs --locale fr --list  # every missing key in it
 ```
+
+Only the committed locales gate anything: the script exits 1 when `de` or `ar` is
+missing a key and 0 when a community language is behind. Use `--list` with `--locale`
+— on its own it prints every missing key in every language, which is tens of thousands
+of lines once the wanted languages are sitting there empty.
 
 ---
 
@@ -31,6 +36,32 @@ to change, and the honest response to "can we add twelve languages" would have t
 `de` is committed because the primary market is Austria — the realistic case, not a
 translation afterthought. `ar` is committed because it is the RTL case, and RTL that is
 not exercised is RTL that is broken.
+
+---
+
+## An empty directory is an open task
+
+Thirty community languages sit in here as a directory containing nothing but
+`.gitkeep`. That is deliberate, and it is the whole recruitment mechanism:
+
+```
+locales/fr/.gitkeep      →   fr   ░░░░░░░░░░  0%   0/2972   community
+```
+
+A language nobody has named is a language nobody starts. A language listed at 0% with
+its smallest file sized in the same breath is a task somebody can take this evening.
+The directory costs the project nothing, promises nothing, and is honest about being
+empty — which is exactly what a missing translation is.
+
+```
+bg  cs  da  el  es  fa  fi  fr  hi  hr
+hu  id  it  ja  ko  nb  nl  pl  pt  ro
+ru  sk  sl  sq  sr  sv  tr  uk  vi  zh-Hans
+```
+
+**Your language is not on the list?** Add the directory in the same pull request as
+your first translated file. The list is not a closed set — it is the set somebody has
+already thought about.
 
 ---
 

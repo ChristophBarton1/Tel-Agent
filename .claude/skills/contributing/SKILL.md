@@ -29,6 +29,21 @@ time and the contributor's:
 
 Do not send somebody new to a code issue. Send them here.
 
+**If this is their first contribution, walk them through
+[`docs/ONBOARDING.md`](../../../docs/ONBOARDING.md) rather than this section.** It is
+the same work written for somebody who has never opened a pull request: one file, about
+thirty strings, no setup at all. This section is the reference; that page is the path.
+
+**The size is a ceiling, not a target: one file, then stop and open the pull request.**
+The point of a first contribution is not the translation in it — it is running the
+fork-to-merge loop once on something small enough that a mistake costs nothing. A
+contributor who translates thirty strings and opens a pull request has learned more
+than one who translates three hundred and never opens it.
+
+Thirty languages sit in `locales/` as directories holding nothing but `.gitkeep` — that
+is the pick-list, and the script prints it. Any language not among them is added in the
+same pull request as its first translated file.
+
 The whole task is one loop, and it is the same loop every time:
 
 ```

@@ -6,13 +6,19 @@
  * present in another locale and absent from English is not a translation, it is a
  * leftover, and it is reported too.
  *
+ * A directory holding nothing but `.gitkeep` is a language the project wants and
+ * nobody has started. It costs nothing, it is honest about standing at 0%, and it is
+ * what makes the work visible to somebody looking for a first task.
+ *
  * No dependencies. Run it with:
  *
- *   node scripts/check-locales.mjs            # summary
- *   node scripts/check-locales.mjs --list     # every missing key
- *   node scripts/check-locales.mjs --locale fr
+ *   node scripts/check-locales.mjs               # summary, every language
+ *   node scripts/check-locales.mjs --locale fr   # one language, file by file
+ *   node scripts/check-locales.mjs --list        # every missing key, not just counts
  *
- * Exits 1 if anything is missing, so it can be a CI check later.
+ * Two tiers, as in locales/README.md. Only the committed locales gate anything: this
+ * exits 1 when `de` or `ar` is missing a key, and 0 when a community language is
+ * behind — falling behind is precisely what a community locale is allowed to do.
  */
 
 import { readdirSync, readFileSync, existsSync } from "node:fs";
@@ -23,9 +29,13 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LOCALES_DIR = join(ROOT, "locales");
 const SOURCE = "en";
 
+/** Kept current by the project. A gap in one of these fails the check. */
+const COMMITTED = new Set(["en", "de", "ar"]);
+
 const args = process.argv.slice(2);
 const showAll = args.includes("--list");
-const onlyLocale = args[args.indexOf("--locale") + 1];
+// indexOf returns -1 when the flag is absent, and args[0] is not the locale.
+const onlyLocale = args.includes("--locale") ? args[args.indexOf("--locale") + 1] : undefined;
 
 /** Every leaf key in an object, as dotted paths. Arrays count as leaves. */
 function leaves(obj, prefix = "") {
@@ -94,8 +104,10 @@ for (const file of sourceFiles) {
 console.log(`\n  Source: ${SOURCE} — ${sourceTotal} keys across ${sourceFiles.length} files\n`);
 
 let failed = false;
+let unclaimed = 0;
 
 for (const locale of targets) {
+  const committed = COMMITTED.has(locale);
   const missing = [];
   const extra = [];
   const untranslated = [];
@@ -132,49 +144,69 @@ for (const locale of targets) {
   const done = sourceTotal - missing.length;
   const percent = sourceTotal ? Math.round((done / sourceTotal) * 100) : 100;
   const bar = "█".repeat(Math.round(percent / 5)).padEnd(20, "░");
+  const tier = committed ? "" : "   community";
 
-  console.log(`  ${locale.padEnd(6)} ${bar} ${String(percent).padStart(3)}%   ${done}/${sourceTotal}`);
+  console.log(
+    `  ${locale.padEnd(8)} ${bar} ${String(percent).padStart(3)}%   ${done}/${sourceTotal}${tier}`,
+  );
 
   // Per-file breakdown. This is the pick-list: one file is one contribution, so a
   // contributor scans this and takes the smallest thing nobody has done.
+  //
+  // Every wanted language sits here as an empty directory, so printing all 33 rows for
+  // each of them would bury the summary. The list is shown for the locales that gate a
+  // release, and on request for any other.
   if (missing.length) {
-    failed = true;
-    const perFile = sourceFiles
-      .map((file) => {
-        const total = sourceKeys.get(file).length;
-        const gone = missing.filter((m) => m.startsWith(`${file}:`)).length;
-        return { file, total, gone, absent: absentFiles.includes(file) };
-      })
-      .filter((row) => row.gone > 0)
-      .sort((a, b) => a.total - b.total);
+    if (committed) failed = true;
+    if (done === 0) unclaimed += 1;
 
-    console.log(`         ${missing.length} key(s) to translate, in ${perFile.length} file(s):\n`);
-    for (const row of perFile) {
-      const state = row.absent ? "not started" : `${row.total - row.gone}/${row.total} done`;
-      console.log(`           ${String(row.total).padStart(4)} keys  ${row.file.padEnd(22)} ${state}`);
-    }
-    console.log();
+    const detailed = committed || onlyLocale === locale || showAll;
 
-    if (showAll) {
-      for (const key of missing) console.log(`           - ${key}`);
-      console.log();
+    if (!detailed) {
+      console.log(`           ${missing.length} open — check-locales.mjs --locale ${locale}\n`);
     } else {
-      console.log(`         Smallest first. Run with --list to see every key.\n`);
+      const perFile = sourceFiles
+        .map((file) => {
+          const total = sourceKeys.get(file).length;
+          const gone = missing.filter((m) => m.startsWith(`${file}:`)).length;
+          return { file, total, gone, absent: absentFiles.includes(file) };
+        })
+        .filter((row) => row.gone > 0)
+        .sort((a, b) => a.total - b.total);
+
+      console.log(`         ${missing.length} key(s) to translate, in ${perFile.length} file(s):\n`);
+      for (const row of perFile) {
+        const state = row.absent ? "not started" : `${row.total - row.gone}/${row.total} done`;
+        console.log(`           ${String(row.total).padStart(4)} keys  ${row.file.padEnd(22)} ${state}`);
+      }
+      console.log();
+
+      if (showAll) {
+        for (const key of missing) console.log(`           - ${key}`);
+        console.log();
+      } else {
+        console.log(`         Smallest first. Run with --list to see every key.\n`);
+      }
     }
   }
   if (untranslated.length) {
     console.log(`         ${untranslated.length} key(s) identical to English — check these are intentional`);
     if (showAll) for (const key of untranslated) console.log(`           ~ ${key}`);
+    console.log();
   }
   if (extra.length) {
-    failed = true;
+    if (committed) failed = true;
     console.log(`         ${extra.length} key(s) not in English — leftovers, remove them`);
     if (showAll) for (const key of extra) console.log(`           + ${key}`);
+    console.log();
   }
-  console.log();
 }
 
 if (!failed) {
-  console.log(`  Nothing missing.\n`);
+  console.log(`  Nothing missing in ${[...COMMITTED].join(" / ")}.\n`);
+}
+if (unclaimed) {
+  console.log(`  ${unclaimed} language(s) at 0% — nobody has started them. One file is a`);
+  console.log(`  complete contribution, and the smallest is 16 strings.\n`);
 }
 process.exit(failed ? 1 : 0);

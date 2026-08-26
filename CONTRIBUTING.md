@@ -3,6 +3,11 @@
 Thank you for looking at this. Please read the first section before opening a pull
 request — it will save you time.
 
+**First time contributing here? Go to [`docs/ONBOARDING.md`](docs/ONBOARDING.md)
+instead.** It is one file, about thirty strings of translation, and it needs no setup —
+the fastest way to run the whole fork-to-merge loop once before you take on anything
+larger. Come back to this page afterwards.
+
 ---
 
 ## Read this first: the project is pre-alpha
